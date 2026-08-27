@@ -1,0 +1,243 @@
+{
+  "date": "2026-08-27T22:36:23.572475564+08:00",
+  "data": {
+    "CMAKE_C_EXTENSIONS": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 12,
+            "character": 4
+          },
+          "end": {
+            "line": 12,
+            "character": 22
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+      "is_function": false
+    },
+    "CMAKE_CXX_STANDARD_REQUIRED": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 16,
+            "character": 4
+          },
+          "end": {
+            "line": 16,
+            "character": 31
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+      "is_function": false
+    },
+    "CMAKE_PROJECT_NAME": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 24,
+            "character": 4
+          },
+          "end": {
+            "line": 24,
+            "character": 22
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSet the project name",
+      "is_function": false
+    },
+    "CMAKE_EXPORT_COMPILE_COMMANDS": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 27,
+            "character": 4
+          },
+          "end": {
+            "line": 27,
+            "character": 33
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nEnable compile command to ease indexing with e.g. clangd",
+      "is_function": false
+    },
+    "CMAKE_C_STANDARD": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 10,
+            "character": 4
+          },
+          "end": {
+            "line": 10,
+            "character": 20
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSetup compiler settings",
+      "is_function": false
+    },
+    "MX_Defines_Syms": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 4,
+            "character": 4
+          },
+          "end": {
+            "line": 4,
+            "character": 19
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated symbols (macros)",
+      "is_function": false
+    },
+    "CMAKE_CXX_STANDARD": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 15,
+            "character": 4
+          },
+          "end": {
+            "line": 15,
+            "character": 22
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nC++20：支持 designated initializers，Config 可只配置部分字段",
+      "is_function": false
+    },
+    "MX_Include_Dirs": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 11,
+            "character": 4
+          },
+          "end": {
+            "line": 11,
+            "character": 19
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated include paths",
+      "is_function": false
+    },
+    "CMAKE_BUILD_TYPE": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 20,
+            "character": 8
+          },
+          "end": {
+            "line": 20,
+            "character": 24
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+      "is_function": false
+    },
+    "MX_LINK_LIBS": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 56,
+            "character": 4
+          },
+          "end": {
+            "line": 56,
+            "character": 16
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nProject static libraries",
+      "is_function": false
+    },
+    "STM32_Drivers_Src": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 32,
+            "character": 4
+          },
+          "end": {
+            "line": 32,
+            "character": 21
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32 HAL/LL Drivers",
+      "is_function": false
+    },
+    "MX_LINK_DIRS": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 52,
+            "character": 4
+          },
+          "end": {
+            "line": 52,
+            "character": 16
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nLink directories setup",
+      "is_function": false
+    },
+    "MX_Application_Src": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 20,
+            "character": 4
+          },
+          "end": {
+            "line": 20,
+            "character": 22
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated application sources",
+      "is_function": false
+    },
+    "CMAKE_C_STANDARD_REQUIRED": {
+      "location": {
+        "uri": "file:///home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+        "range": {
+          "start": {
+            "line": 11,
+            "character": 4
+          },
+          "end": {
+            "line": 11,
+            "character": 29
+          }
+        }
+      },
+      "document_info": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt",
+      "is_function": false
+    }
+  }
+}

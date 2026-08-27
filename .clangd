@@ -1,0 +1,12 @@
+# .clangd — 提交进 git，三平台通用
+CompileFlags:
+  CompilationDatabase: build/Debug
+  Add:
+    - --target=arm-none-eabi
+  Remove:
+    - -fstack-usage
+    - -specs=*
+Diagnostics:
+  Suppress:
+    - unknown-argument
+    - unsupported-option

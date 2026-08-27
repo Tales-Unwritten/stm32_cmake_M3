@@ -1,0 +1,19 @@
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:23:7:constexpr spi_bus::spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:26:13:constexpr spi_bus::~spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:26:13:virtual constexpr spi_bus::~spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:7:1:soft_spi_bus::soft_spi_bus(const SoftSpiConfig&)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:soft_spi_bus::~soft_spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:virtual soft_spi_bus::~soft_spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:28:6:virtual void soft_spi_bus::init()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:54:6:virtual void soft_spi_bus::deinit()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:73:6:void soft_spi_bus::_delay()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:93:9:uint8_t soft_spi_bus::_transfer_byte_core(uint8_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:144:9:virtual uint8_t soft_spi_bus::transfer_byte(uint8_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:149:6:virtual void soft_spi_bus::transfer(const uint8_t*, uint8_t*, uint16_t)	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:167:6:virtual void soft_spi_bus::cs_select()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:174:6:virtual void soft_spi_bus::cs_deselect()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:210:6:void soft_spi_bus::set_mode(uint8_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:221:6:void soft_spi_bus::set_bit_order(uint8_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:226:6:void soft_spi_bus::set_speed(uint8_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:235:6:void soft_spi_bus::lock()	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:248:6:void soft_spi_bus::unlock()	16	static

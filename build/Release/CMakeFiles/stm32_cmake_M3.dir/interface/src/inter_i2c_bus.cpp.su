@@ -1,0 +1,18 @@
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:7:1:inter_i2c_bus::inter_i2c_bus(const I2C_Bus_Info_t&, uint8_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:29:6:void inter_i2c_bus::deinit()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:40:6:void inter_i2c_bus::_delay()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:49:6:void inter_i2c_bus::_write_scl(uint8_t)	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:59:6:void inter_i2c_bus::_write_sda(uint8_t)	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:16:6:void inter_i2c_bus::init()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:69:10:polarity inter_i2c_bus::_read_sda()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:78:6:void inter_i2c_bus::start()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:86:6:void inter_i2c_bus::stop()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:120:6:void inter_i2c_bus::write_byte(uint8_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:130:9:uint8_t inter_i2c_bus::read_byte()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:147:9:uint8_t inter_i2c_bus::wait_ack(uint16_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:166:6:void inter_i2c_bus::write_ack(uint8_t)	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:178:6:void inter_i2c_bus::lock()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:93:9:uint8_t inter_i2c_bus::scan(uint8_t*, uint8_t, uint8_t, uint8_t)	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:192:6:void inter_i2c_bus::unlock()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:197:9:uint8_t inter_i2c_bus::is_busy()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_bus.cpp:206:6:void inter_i2c_bus::bus_recovery()	16	static

@@ -1,0 +1,6 @@
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/CMakeFiles/stm32_cmake_M3.dir
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/CMakeFiles/edit_cache.dir
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/CMakeFiles/rebuild_cache.dir
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/home/loopy/Documents/project/stm32_cmake_M3/build/Release/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

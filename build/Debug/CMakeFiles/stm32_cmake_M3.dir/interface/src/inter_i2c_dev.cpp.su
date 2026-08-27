@@ -1,0 +1,8 @@
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:4:1:inter_i2c_dev::inter_i2c_dev(inter_i2c_bus*, uint8_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:13:6:void inter_i2c_dev::write_16bit(uint8_t, uint16_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:44:10:uint16_t inter_i2c_dev::read_16bit(uint8_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:93:6:void inter_i2c_dev::freedom_write(uint8_t, uint64_t, uint8_t)	48	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:123:6:bool inter_i2c_dev::freedom_read(uint8_t, uint64_t*, uint8_t)	48	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:157:9:uint8_t inter_i2c_dev::lastError()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:166:6:bool inter_i2c_dev::ping()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_i2c_dev.cpp:187:6:void inter_i2c_dev::softReset()	24	static
