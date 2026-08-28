@@ -1,6 +1,6 @@
-/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:23:7:constexpr spi_bus::spi_bus()	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:26:13:constexpr spi_bus::~spi_bus()	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:26:13:virtual constexpr spi_bus::~spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:22:7:constexpr spi_bus::spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:25:13:constexpr spi_bus::~spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_spi_bus.hpp:25:13:virtual constexpr spi_bus::~spi_bus()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:7:1:soft_spi_bus::soft_spi_bus(const SoftSpiConfig&)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:soft_spi_bus::~soft_spi_bus()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:virtual soft_spi_bus::~soft_spi_bus()	16	static

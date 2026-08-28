@@ -2,9 +2,9 @@
 
 #ifdef __cplusplus
 
-#include <cstdint>
 #include "inter_io_ctrl.hpp"
-#include "inter_usart.hpp"   // uart_buffer_t（与硬件串口同构的缓冲类型，协议层零适配）
+#include "inter_usart.hpp" // uart_buffer_t + usart_port_base（与硬件串口同构，协议层零适配）
+#include <cstdint>
 
 /**
  * @brief 软件串口（GPIO 位反转，DWT 周期计数精确时序）
@@ -15,19 +15,25 @@
  *  - 零堆分配、禁拷贝、init/deinit 生命周期管理
  *  - 主频自动跟随 SystemCoreClock（改时钟配置无需改本驱动）
  *
- * 原实现来源：soft_uart（纯 C 版），改写为 C++ inter 风格。
+ * 模板接口与 usart_port（硬件串口）同构：
+ *  - template <uint16_t RX_BUF_SIZE = 256>，声明方式一致
+ *  - 继承 usart_port_base，可与硬件串口多态互换
+ *    （如协议层/器件层持有 usart_port_base& 时，软/硬串口皆可传入）
  *
- * 波特率精度 @240MHz（SystemCoreClock 自动适配）：
- *   9600: 25000 周期/bit（误差 0.00%）  19200: 12500（0.00%）
- *   38400: 6250（0.00%）  57600: 4167（0.02%）  115200: 2083（0.02%）
+ * 原实现来源：soft_uart（纯 C 版），改写为 C++ inter 风格，
+ * 后按本工程硬件串口模板接口改造。
+ *
+ * 波特率精度 @72MHz（SystemCoreClock 自动适配）：
+ *   9600: 7500 周期/bit（误差 0.00%）  19200: 3750（0.00%）
+ *   38400: 1875（0.00%）  57600: 1250（0.00%）  115200: 625（0.00%）
  */
 struct SoftUartConfig
 {
-    GPIO_TypeDef* tx_port;         // TX 端口，如 GPIOB
-    pin_enum_t    tx_pin;          // TX 引脚掩码，如 pin6
-    GPIO_TypeDef* rx_port;         // RX 端口
-    pin_enum_t    rx_pin;          // RX 引脚掩码
-    uint32_t baud = 115200;        // 波特率（见 BAUD_xxx 常量）
+    GPIO_TypeDef *tx_port;  // TX 端口，如 GPIOB
+    pin_enum_t tx_pin;      // TX 引脚掩码，如 pin6
+    GPIO_TypeDef *rx_port;  // RX 端口
+    pin_enum_t rx_pin;      // RX 引脚掩码
+    uint32_t baud = 115200; // 波特率（见 BAUD_xxx 常量）
 };
 
 /**
@@ -44,9 +50,9 @@ struct SoftUartConfig
  * @brief 软件串口端口（阻塞发送 + 轮询接收）
  *
  * 使用示例：
- *   static soft_uart_port suart({
+ *   static soft_uart_port<256> suart({
  *       GPIOB, pin6, GPIOB, pin7,
- *       soft_uart_port::BAUD_115200
+ *       soft_uart_port<256>::BAUD_115200
  *   });
  *   suart.init();
  *   suart.puts("hello\r\n");
@@ -61,33 +67,36 @@ struct SoftUartConfig
  *    不监控 RX 线）。
  *  - 发送期间关闭中断可避免 ISR 抢占导致位时序拉长（如需）。
  */
-class soft_uart_port
+template <uint16_t RX_BUF_SIZE = 256> class soft_uart_port : public usart_port_base
 {
-public:
+  public:
     // ── 波特率常量 ──────────────────────────────────────────
-    static constexpr uint32_t BAUD_9600   = 9600U;
-    static constexpr uint32_t BAUD_19200  = 19200U;
-    static constexpr uint32_t BAUD_38400  = 38400U;
-    static constexpr uint32_t BAUD_57600  = 57600U;
+    static constexpr uint32_t BAUD_9600 = 9600U;
+    static constexpr uint32_t BAUD_19200 = 19200U;
+    static constexpr uint32_t BAUD_38400 = 38400U;
+    static constexpr uint32_t BAUD_57600 = 57600U;
     static constexpr uint32_t BAUD_115200 = 115200U;
 
     explicit soft_uart_port(const SoftUartConfig &cfg);
-    ~soft_uart_port();
+    ~soft_uart_port() override;
 
     soft_uart_port(const soft_uart_port &) = delete;
     soft_uart_port &operator=(const soft_uart_port &) = delete;
 
     // ── 生命周期 ──────────────────────────────────────────
 
-    void init();                   // 使能 DWT + 配置引脚（幂等）
-    void deinit();                 // 引脚恢复模拟输入，可再次 init()
-    [[nodiscard]] bool is_initialized() const noexcept { return _initialized; }
+    void init() override;   // 使能 DWT + 配置引脚（幂等）
+    void deinit() override; // 引脚恢复模拟输入，可再次 init()
+    [[nodiscard]] bool is_initialized() const noexcept override
+    {
+        return _initialized;
+    }
 
     // ── 发送（阻塞，约 10 位周期/字节；@115200 ≈ 87µs） ────
 
-    void putc(uint8_t byte);       // 单字节（起始位 + 8 数据位 + 停止位）
-    void puts(const char *str);    // 字符串
-    void write(const uint8_t *data, uint16_t len);   // 原始缓冲区
+    void putc(uint8_t byte);                       // 单字节（起始位 + 8 数据位 + 停止位）
+    void puts(const char *str);                    // 字符串
+    void write(const uint8_t *data, uint16_t len); // 原始缓冲区
 
     // ── 接收 ──────────────────────────────────────────────
 
@@ -109,35 +118,44 @@ public:
 
     // ── 运行时配置 ────────────────────────────────────────
 
-    void set_baud(uint32_t baud);  // 运行时改波特率（重新计算位周期）
+    void set_baud(uint32_t baud); // 运行时改波特率（重新计算位周期）
 
     // ════════════════════════════════════════════════════════
-    //  以下接口与 usart_port（硬件串口）签名对齐，
+    //  以下接口与 usart_port（硬件串口）签名对齐并 override，
     //  协议层（Modbus 等）无需区分硬/软串口即可桥接。
     // ════════════════════════════════════════════════════════
 
     // ── 发送（对齐 usart_port） ───────────────────────────
 
     /** @brief 阻塞发送（参数校验失败返回 false），等价 write() */
-    bool send_data(const uint8_t *data, uint16_t len);
+    bool send_data(const uint8_t *data, uint16_t len) override;
 
     /**
      * @brief 发送（对齐 usart_port 签名）
      * @note  软串口无硬件中断发送能力：本方法退化为阻塞发送，
      *        返回时数据已全部发出（接口兼容，语义同步）
      */
-    bool send_data_it(const uint8_t *data, uint16_t len);
+    bool send_data_it(const uint8_t *data, uint16_t len) override;
 
     // ── 缓冲区访问（对齐 usart_port） ─────────────────────
 
     /** @brief 获取收发缓冲区引用（类型与 usart_port 完全相同，协议层零适配） */
-    [[nodiscard]] uart_buffer_t *buffer() noexcept { return &_buf; }
+    [[nodiscard]] uart_buffer_t *buffer() noexcept override
+    {
+        return &_buf;
+    }
 
     /** @brief 无硬件外设，恒返回 0（签名对齐 usart_port::periph()） */
-    [[nodiscard]] uint32_t periph() const noexcept { return 0; }
+    [[nodiscard]] uint32_t periph() const noexcept override
+    {
+        return 0;
+    }
 
-    /** @brief 接收缓冲区容量（256 字节） */
-    [[nodiscard]] uint16_t rx_buf_capacity() const noexcept { return RX_BUF_SIZE; }
+    /** @brief 接收缓冲区容量（编译期模板大小） */
+    [[nodiscard]] uint16_t rx_buf_capacity() const noexcept override
+    {
+        return RX_BUF_SIZE;
+    }
 
     /**
      * @brief 接收轮询（主循环必须周期调用）
@@ -158,24 +176,23 @@ public:
      */
     static constexpr uint8_t FRAME_IDLE_CHARS = 20;
 
-private:
-    static constexpr uint16_t RX_BUF_SIZE = 256;   ///< 接收缓冲区（Modbus ADU 上限）
-
+  private:
     void _dwt_enable();            // 使能 DWT 周期计数器
     void _delay_cycles(uint32_t cycles);   // 精确忙等 N 周期（溢出安全）
+    void _wait_until(uint32_t target);     // 忙等至绝对时刻（帧锚定位时序）
 
     io_ctrl _tx;
     io_ctrl _rx;
     uint32_t _baud;
-    uint32_t _cycles_per_bit;      // 一位周期 = SystemCoreClock / baud
-    uint8_t  _rx_prev;             // 上一 RX 状态（边沿检测）
-    bool     _initialized;
+    uint32_t _cycles_per_bit; // 一位周期 = SystemCoreClock / baud
+    uint8_t _rx_prev;         // 上一 RX 状态（边沿检测）
+    bool _initialized;
 
     // ── 协议桥接（与 usart_port 相同的缓冲视图） ──
-    uint8_t        _rx_buf[RX_BUF_SIZE];   // 零堆分配接收缓冲
-    uart_buffer_t  _buf;
-    uint32_t       _last_rx_cycle;         // 最后收字节时刻（DWT 周期）
-    uint32_t       _idle_cycles;           // 帧空闲判定阈值（3.5 字符）
+    uint8_t _rx_buf[RX_BUF_SIZE]; // 零堆分配接收缓冲（模板大小）
+    uart_buffer_t _buf;
+    uint32_t _last_rx_cycle; // 最后收字节时刻（DWT 周期）
+    uint32_t _idle_cycles;   // 帧空闲判定阈值（3.5 字符）
 };
 
 #endif /* __cplusplus */

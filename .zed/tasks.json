@@ -3,12 +3,48 @@
     "label": "Build (Debug)",
     "command": "cmake --preset Debug && cmake --build --preset Debug -j$(nproc 2>/dev/null || echo 4)",
     "tags": ["build"],
-    "reveal": "always",
+    "reveal": "always"
   },
   {
     "label": "Build (Release)",
     "command": "cmake --preset Release && cmake --build --preset Release -j$(nproc 2>/dev/null || echo 4)",
     "tags": ["build"],
-    "reveal": "always",
+    "reveal": "always"
+  },
+  {
+    "label": "Configure (Debug)",
+    "command": "cmake --preset Debug",
+    "tags": ["configure"],
+    "reveal": "always"
+  },
+  {
+    "label": "Configure (Release)",
+    "command": "cmake --preset Release",
+    "tags": ["configure"],
+    "reveal": "always"
+  },
+  {
+    "label": "flash_debug",
+    "command": " probe-rs download --speed 4000 --chip STM32F103ZETx build/Debug/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
+  },
+  {
+    "label": "flash_release",
+    "command": " probe-rs download --speed 4000 --chip STM32F103ZETx build/Release/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
+  },
+  {
+    "label": "erase chip",
+    "command": "probe-rs erase --connect-under-reset --chip STM32F103ZETx && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
+  },
+  {
+    "label": "release and flash",
+    "command": "cmake --preset Release && cmake --build --preset Release -j$(nproc 2>/dev/null || echo 4) && probe-rs download --speed 4000 --chip STM32F103ZETx build/Release/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
   }
 ]

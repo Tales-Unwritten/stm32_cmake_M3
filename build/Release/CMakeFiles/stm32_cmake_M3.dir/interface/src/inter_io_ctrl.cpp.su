@@ -1,13 +1,14 @@
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:7:1:io_ctrl::io_ctrl(GPIO_TypeDef*, pin_enum_t)	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:12:1:io_ctrl::~io_ctrl()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:17:1:io_ctrl::io_ctrl(io_ctrl&&)	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:25:10:io_ctrl& io_ctrl::operator=(io_ctrl&&)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:48:6:void io_ctrl::_enable_clock()	40	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:79:6:void io_ctrl::_apply(mode_enum_t, pull_enum_t, speed_enum_t)	40	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:92:6:void io_ctrl::init(mode_enum_t, pull_enum_t, speed_enum_t)	24	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:102:6:void io_ctrl::reinit(mode_enum_t, pull_enum_t, speed_enum_t)	4	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:110:6:void io_ctrl::deinit()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:12:1:io_ctrl::~io_ctrl()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:25:10:io_ctrl& io_ctrl::operator=(io_ctrl&&)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:92:6:void io_ctrl::init(mode_enum_t, pull_enum_t, speed_enum_t)	40	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:102:6:void io_ctrl::reinit(mode_enum_t, pull_enum_t, speed_enum_t)	40	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:110:6:void io_ctrl::deinit()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:124:6:void io_ctrl::set_pull(pull_enum_t)	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:138:6:void io_ctrl::set_speed(speed_enum_t)	32	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:158:6:void io_ctrl::set_af(afio_enum_t)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:540:6:void io_ctrl::lock()	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:551:6:void io_ctrl::high()	0	static
@@ -16,6 +17,5 @@
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:570:6:void io_ctrl::set(bool)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:575:6:void io_ctrl::write(polarity)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:593:10:polarity io_ctrl::read()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:609:10:polarity io_ctrl::read_output()	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:616:6:bool io_ctrl::_check_out() const	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:138:6:void io_ctrl::set_speed(speed_enum_t)	32	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_io_ctrl.cpp:609:10:polarity io_ctrl::read_output()	8	static

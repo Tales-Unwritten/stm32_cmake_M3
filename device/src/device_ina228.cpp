@@ -504,121 +504,121 @@ void INA228::dumpRawRegisters(const INA228_Snapshot& s)
     char buf[128];
     int  len;
 
-    len = snprintf(buf, sizeof(buf),
-                   "\r\n========== INA228 RAW ==========\r\n");
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf),
+    //                "\r\n========== INA228 RAW ==========\r\n");
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "CONFIG         : 0x%04X\r\n", s.config);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "CONFIG         : 0x%04X\r\n", s.config);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "ADC_CONFIG     : 0x%04X\r\n", s.adcConfig);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "ADC_CONFIG     : 0x%04X\r\n", s.adcConfig);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "SHUNT_CAL      : 0x%04X\r\n", s.shuntCal);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "SHUNT_CAL      : 0x%04X\r\n", s.shuntCal);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "DIAG_ALERT     : 0x%04X\r\n", s.diagAlert);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "DIAG_ALERT     : 0x%04X\r\n", s.diagAlert);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "DIETEMP        : 0x%04X\r\n", s.temp);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "DIETEMP        : 0x%04X\r\n", s.temp);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "SOVL           : 0x%04X\r\n", s.sovl);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "SOVL           : 0x%04X\r\n", s.sovl);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "SUVL           : 0x%04X\r\n", s.suvl);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "SUVL           : 0x%04X\r\n", s.suvl);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "BOVL           : 0x%04X\r\n", s.bovl);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "BOVL           : 0x%04X\r\n", s.bovl);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "BUVL           : 0x%04X\r\n", s.buvl);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "BUVL           : 0x%04X\r\n", s.buvl);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "TEMP_LIMIT     : 0x%04X\r\n", s.temp_limit);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "TEMP_LIMIT     : 0x%04X\r\n", s.temp_limit);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "PWR_LIMIT      : 0x%04X\r\n", s.pwr_limit);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "PWR_LIMIT      : 0x%04X\r\n", s.pwr_limit);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "VSHUNT         : 0x%06lX\r\n",
-                   (unsigned long)(s.vshunt & 0xFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "VSHUNT         : 0x%06lX\r\n",
+    //                (unsigned long)(s.vshunt & 0xFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "VBUS           : 0x%06lX\r\n",
-                   (unsigned long)(s.vbus & 0xFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "VBUS           : 0x%06lX\r\n",
+    //                (unsigned long)(s.vbus & 0xFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "CURRENT        : 0x%06lX\r\n",
-                   (unsigned long)(s.current & 0xFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "CURRENT        : 0x%06lX\r\n",
+    //                (unsigned long)(s.current & 0xFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "POWER          : 0x%06lX\r\n",
-                   (unsigned long)(s.power & 0xFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "POWER          : 0x%06lX\r\n",
+    //                (unsigned long)(s.power & 0xFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "ENERGY         : 0x%02lX%08lX\r\n",
-                   (unsigned long)((s.energy >> 32) & 0xFF),
-                   (unsigned long)(s.energy & 0xFFFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "ENERGY         : 0x%02lX%08lX\r\n",
+    //                (unsigned long)((s.energy >> 32) & 0xFF),
+    //                (unsigned long)(s.energy & 0xFFFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "CHARGE         : 0x%02lX%08lX\r\n",
-                   (unsigned long)((s.charge >> 32) & 0xFF),
-                   (unsigned long)(s.charge & 0xFFFFFFFF));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "CHARGE         : 0x%02lX%08lX\r\n",
+    //                (unsigned long)((s.charge >> 32) & 0xFF),
+    //                (unsigned long)(s.charge & 0xFFFFFFFF));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "MANUFACTURER_ID: 0x%04X\r\n", s.manufacturerID);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "MANUFACTURER_ID: 0x%04X\r\n", s.manufacturerID);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "DEVICE_ID      : 0x%04X\r\n", s.deviceID);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "DEVICE_ID      : 0x%04X\r\n", s.deviceID);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 }
 
 void INA228::dumpEngineeringData(const INA228_Snapshot& s)
 {
-    char buf[128];
-    int  len;
+    // char buf[128];
+    // int  len;
 
-    int32_t vshunt_uV = rawToShuntVoltage_uV(s.vshunt);
-    int32_t vbus_mV   = rawToBusVoltage_mV(s.vbus);
-    int32_t temp_mC   = rawToTemperature_mC(s.temp);
-    int32_t cur_mA    = rawToCurrent_mA(s.current);
-    int32_t pwr_mW    = rawToPower_mW(s.power);
-    int64_t eng_mJ    = rawToEnergy_mJ(s.energy);
-    int64_t chg_mC    = rawToCharge_mC(s.charge);
+    // int32_t vshunt_uV = rawToShuntVoltage_uV(s.vshunt);
+    // int32_t vbus_mV   = rawToBusVoltage_mV(s.vbus);
+    // int32_t temp_mC   = rawToTemperature_mC(s.temp);
+    // int32_t cur_mA    = rawToCurrent_mA(s.current);
+    // int32_t pwr_mW    = rawToPower_mW(s.power);
+    // int64_t eng_mJ    = rawToEnergy_mJ(s.energy);
+    // int64_t chg_mC    = rawToCharge_mC(s.charge);
 
-    len = snprintf(buf, sizeof(buf),
-                   "\r\n========== INA228 ENGINEERING ==========\r\n");
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf),
+    //                "\r\n========== INA228 ENGINEERING ==========\r\n");
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Bus Voltage    : %ld.%03ld V\r\n",
-                   (long)vbus_mV / 1000, (long)vbus_mV % 1000);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Bus Voltage    : %ld.%03ld V\r\n",
+    //                (long)vbus_mV / 1000, (long)vbus_mV % 1000);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Shunt Voltage  : %ld uV\r\n", (long)vshunt_uV);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Shunt Voltage  : %ld uV\r\n", (long)vshunt_uV);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Temperature    : %ld.%03ld C\r\n",
-                   (long)temp_mC / 1000, (long)temp_mC % 1000);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Temperature    : %ld.%03ld C\r\n",
+    //                (long)temp_mC / 1000, (long)temp_mC % 1000);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Current        : %ld.%03ld A\r\n",
-                   (long)cur_mA / 1000, (long)cur_mA % 1000);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Current        : %ld.%03ld A\r\n",
+    //                (long)cur_mA / 1000, (long)cur_mA % 1000);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Power          : %ld.%03ld W\r\n",
-                   (long)pwr_mW / 1000, (long)pwr_mW % 1000);
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Power          : %ld.%03ld W\r\n",
+    //                (long)pwr_mW / 1000, (long)pwr_mW % 1000);
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Energy         : %ld.%03ld J\r\n",
-                   (long)(eng_mJ / 1000),
-                   (long)((eng_mJ % 1000) < 0 ? -(eng_mJ % 1000) : (eng_mJ % 1000)));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Energy         : %ld.%03ld J\r\n",
+    //                (long)(eng_mJ / 1000),
+    //                (long)((eng_mJ % 1000) < 0 ? -(eng_mJ % 1000) : (eng_mJ % 1000)));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 
-    len = snprintf(buf, sizeof(buf), "Charge         : %ld.%03ld C\r\n",
-                   (long)(chg_mC / 1000),
-                   (long)((chg_mC % 1000) < 0 ? -(chg_mC % 1000) : (chg_mC % 1000)));
-    (void)debug_uart.send_data((const uint8_t*)buf, len);
+    // len = snprintf(buf, sizeof(buf), "Charge         : %ld.%03ld C\r\n",
+    //                (long)(chg_mC / 1000),
+    //                (long)((chg_mC % 1000) < 0 ? -(chg_mC % 1000) : (chg_mC % 1000)));
+    // (void)debug_uart.send_data((const uint8_t*)buf, len);
 }
 
 void INA228::dumpRegisters()

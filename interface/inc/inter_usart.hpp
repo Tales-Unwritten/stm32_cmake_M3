@@ -1,23 +1,35 @@
 #pragma once
 
 #ifdef __cplusplus
-
-#include <cstdint>
 #include "inter_io_ctrl.hpp"
+#include <cstdint>
+
+enum usart_enum_t : uint8_t
+{
+    usart1,
+    usart2,
+    usart3,
+    uart4,
+    uart5,
+};
+
+/**
+ * @brief 获取 USART 外设指针（由平台实现）
+ */
+USART_TypeDef *usart_periph_ptr(usart_enum_t id);
 
 /**
  * @brief  USART 端口引脚配置
  */
 struct UsartPortConfig
 {
-    uint32_t usart_periph;  ///< USART0 / USART1 / USART2 / UART3 / UART4 / USART5 / UART6 / UART7
-    GPIO_TypeDef* tx_port;  ///< TX GPIO 端口
-    pin_enum_t    tx_pin;   ///< TX 引脚掩码
-    GPIO_TypeDef* rx_port;  ///< RX GPIO 端口
-    pin_enum_t    rx_pin;   ///< RX 引脚掩码
-    afio_enum_t   af;       ///< STM32F1 AFIO 重映射选项
-    uint32_t baudrate;      ///< 波特率
-    uint16_t rx_buf_size;   ///< 接收缓冲区字节数
+    usart_enum_t usart_periph; ///< usart1 / usart2 / usart3 / uart4 / uart5
+    GPIO_TypeDef *tx_port;     ///< TX GPIO 端口
+    pin_enum_t tx_pin;         ///< TX 引脚掩码
+    GPIO_TypeDef *rx_port;     ///< RX GPIO 端口
+    pin_enum_t rx_pin;         ///< RX 引脚掩码
+    afio_enum_t af;            ///< STM32F1 AFIO 重映射选项
+    uint32_t baudrate;         ///< 波特率
 };
 
 /**
@@ -29,23 +41,43 @@ struct UsartPortConfig
 struct uart_buffer_t
 {
     /* ── 接收（ISR → 用户） ── */
-    uint8_t        *rx_buf;      ///< 接收缓冲区指针
-    volatile uint16_t rx_len;    ///< 当前帧数据长度
-    volatile uint8_t  rx_flag;   ///< 0=空闲  1=帧就绪（IDLE 触发）
+    uint8_t *rx_buf;          ///< 接收缓冲区指针
+    volatile uint16_t rx_len; ///< 当前帧数据长度
+    volatile uint8_t rx_flag; ///< 0=空闲  1=帧就绪（IDLE 触发）
 
     /* ── 发送（ISR 内部使用，用户只读 tx_busy） ── */
-    const uint8_t   *tx_data;    ///< 用户待发送数据指针
-    volatile uint16_t tx_len;   ///< 待发送总字节数
-    volatile uint16_t tx_idx;   ///< 当前发送位置
-    volatile uint8_t  tx_busy;   ///< 0=空闲  1=中断发送进行中
+    const uint8_t *tx_data;   ///< 用户待发送数据指针
+    volatile uint16_t tx_len; ///< 待发送总字节数
+    volatile uint16_t tx_idx; ///< 当前发送位置
+    volatile uint8_t tx_busy; ///< 0=空闲  1=中断发送进行中
+};
+
+// ============================================================
+//  串口基类：用于 ISR 统一持有不同 RX 缓冲区大小的实例
+// ============================================================
+
+class usart_port_base
+{
+  public:
+    virtual ~usart_port_base() = default;
+
+    virtual void init() = 0;
+    virtual void deinit() = 0;
+    virtual bool is_initialized() const noexcept = 0;
+    virtual bool send_data(const uint8_t *data, uint16_t len) = 0;
+    virtual bool send_data_it(const uint8_t *data, uint16_t len) = 0;
+    virtual uart_buffer_t *buffer() noexcept = 0;
+    virtual uint32_t periph() const noexcept = 0;
+    virtual uint16_t rx_buf_capacity() const noexcept = 0;
 };
 
 // ============================================================
 
-class usart_port
+template <uint16_t RX_BUF_SIZE = 256> 
+class usart_port : public usart_port_base
 {
-public:
-    static constexpr uint16_t TX_BUF_SIZE = 256;   ///< 内部发送缓冲区大小
+  public:
+    static constexpr uint16_t TX_BUF_SIZE = 256; ///< 内部发送缓冲区大小
 
     explicit usart_port(const UsartPortConfig &cfg);
     ~usart_port();
@@ -55,33 +87,45 @@ public:
 
     // ── 生命周期 ──────────────────────────────────────────
 
-    void init();
-    void deinit();
-    [[nodiscard]] bool is_initialized() const noexcept { return _initialized; }
+    void init() override;
+    void deinit() override;
+    [[nodiscard]] bool is_initialized() const noexcept override
+    {
+        return _initialized;
+    }
 
     // ── 发送 ──────────────────────────────────────────────
 
     /** @brief 阻塞发送（超时保护）
      *  @return true=发送成功  false=参数错误或超时 */
-    bool send_data(const uint8_t *data, uint16_t len);
+    bool send_data(const uint8_t *data, uint16_t len) override;
 
     /** @brief 中断发送（非阻塞），通过 buf->tx_busy 判断完成
      *  @return true=已启动  false=参数错误或正在发送中 */
-    bool send_data_it(const uint8_t *data, uint16_t len);
+    bool send_data_it(const uint8_t *data, uint16_t len) override;
 
     // ── 缓冲区访问 ────────────────────────────────────────
 
     /** @brief 获取收发缓冲区引用（轮询 buf.rx_flag 和 buf.tx_busy） */
-    [[nodiscard]] uart_buffer_t *buffer() noexcept { return &_buf; }
+    [[nodiscard]] uart_buffer_t *buffer() noexcept override
+    {
+        return &_buf;
+    }
 
     /** @brief 外设基址（ISR 内部查询用，外部无需关心） */
-    [[nodiscard]] uint32_t periph() const noexcept { return _cfg.usart_periph; }
+    [[nodiscard]] uint32_t periph() const noexcept override
+    {
+        return (uint32_t)usart_periph_ptr(_cfg.usart_periph);
+    }
 
-    /** @brief 接收缓冲区容量（ISR 内部查询用，外部无需关心） */
-    [[nodiscard]] uint16_t rx_buf_capacity() const noexcept { return _rx_buf_size; }
+    /** @brief 接收缓冲区容量（编译期模板大小） */
+    [[nodiscard]] uint16_t rx_buf_capacity() const noexcept override
+    {
+        return RX_BUF_SIZE;
+    }
 
-private:
-    void      _enable_clock();
+  private:
+    void _enable_clock();
     IRQn_Type _get_irq() const;
 
     void _register_port();
@@ -90,19 +134,18 @@ private:
     // ── 成员 ──────────────────────────────────────────────
 
     UsartPortConfig _cfg;
-    io_ctrl         _tx;
-    io_ctrl         _rx;
-    bool            _initialized;
+    io_ctrl _tx;
+    io_ctrl _rx;
+    bool _initialized;
 
-    // 动态分配的接收缓冲区（内部拥有）
-    uint8_t        *_rx_heap_buf;
-    uint16_t        _rx_buf_size;
+    // 编译期接收缓冲区（零堆分配）
+    uint8_t _rx_buf[RX_BUF_SIZE];
 
     // 暴露给用户和 ISR 的缓冲区视图
-    uart_buffer_t   _buf;
+    uart_buffer_t _buf;
 
     // 内部发送缓冲区（零堆分配，防止用户指针生命周期悬空）
-    uint8_t         _tx_buf[TX_BUF_SIZE];
+    uint8_t _tx_buf[TX_BUF_SIZE];
 };
 
 #endif /* __cplusplus */

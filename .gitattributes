@@ -1,0 +1,38 @@
+# ── Git 跨平台配置 ──────────────────────────────────────
+# 三端共用: Windows / Linux / macOS
+
+# 自动检测文本/二进制
+* text=auto
+
+# ── 源码文件 → 强制 LF ─────────────────────────────────
+*.c    text eol=lf
+*.h    text eol=lf
+*.cpp  text eol=lf
+*.hpp  text eol=lf
+*.s    text eol=lf
+*.S    text eol=lf
+*.ld   text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# ── 脚本文件 → 强制 LF ─────────────────────────────────
+*.sh   text eol=lf
+*.py   text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+
+# ── 二进制文件 ──────────────────────────────────────────
+*.elf  binary
+*.bin  binary
+*.hex  binary
+*.o    binary
+*.a    binary
+*.lib  binary
+*.pdf  binary
+*.docx binary
+*.png  binary
+*.jpg  binary
+*.ico  binary

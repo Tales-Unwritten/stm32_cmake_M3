@@ -29,11 +29,11 @@
 #include <cstring>
 
 /* ── boot 硬件实例 ────────────────────────────────────────
- * USART0 @ PA9(TX)/PA10(RX)，115200-8N1（与 app 侧软串口同引脚，
+ * USART1 @ PA9(TX)/PA10(RX)，115200-8N1（与 app 侧软串口同引脚，
  * 每次复位后重新初始化，互不干扰） */
-static usart_port s_boot_uart({
-    USART0, GPIOA, pin9, GPIOA, pin10,
-    afio_enum_t::NONE, IAP_BAUDRATE, 512
+static usart_port<512> s_boot_uart({
+    usart1, GPIOA, pin9, GPIOA, pin10,
+    afio_enum_t::NONE, IAP_BAUDRATE
 });
 
 /* PC13 按键：上拉输入，低电平=按下 */

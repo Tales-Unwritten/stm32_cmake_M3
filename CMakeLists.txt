@@ -68,11 +68,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_i2c_bus.cpp
     interface/src/inter_i2c_dev.cpp
     interface/src/inter_soft_spi.cpp
+    interface/src/inter_soft_uart.cpp
+    interface/src/inter_usart.cpp
+    interface/src/inter_soft_uart.cpp
     interface/src/inter_spi.cpp
-    
-    
+
+
     # interface/src/inter_adc.cpp
-    # interface/src/inter_usart.cpp
     # interface/src/inter_timer.cpp
 
     # ---- device：器件驱动层 ------------------------
@@ -80,6 +82,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     device/src/device_ds18b20.cpp
     device/src/device_ina226.cpp
     device/src/device_ina228.cpp
+    device/src/device_serial.cpp
 
     # ---- protocol：通信协议层 ----------------------
     # protocol/modbus/src/xxx.cpp
@@ -96,6 +99,16 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     protocol/string/inc
 )
 
+# clangd 使用 clang 前端，不知道 arm-none-eabi-g++ 的隐式标准库路径，
+# 会报 'cstdint' file not found。这里把编译器隐式 include 目录以 -isystem
+# 显式写进编译命令（compile_commands.json），仅作用于 CXX 编译；
+# 这些目录本就是 g++ 默认搜索路径，加入后不改变实际构建行为。
+# 注：不能用 target_include_directories(SYSTEM) —— CMake 会自动去重隐式目录，
+# 必须用 target_compile_options 注入，才能进入 compile_commands.json。
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:-isystem$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-isystem>>
+)
+
 # Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
@@ -109,4 +122,42 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
 
     # Add user defined libraries
+)
+
+
+
+# ============================================================================
+# 构建后处理：生成 .hex / .bin 并显示内存占用
+# ============================================================================
+
+# 获取目标文件名（使用生成器表达式，自动处理 .elf 后缀等问题）
+set(TARGET_NAME ${CMAKE_PROJECT_NAME})
+
+# 生成 .hex 文件
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${TARGET_NAME}> ${TARGET_NAME}.hex
+    COMMAND echo "  [+] ${TARGET_NAME}.hex generated"
+    COMMENT "Generating HEX file..."
+    BYPRODUCTS ${TARGET_NAME}.hex
+    VERBATIM
+)
+
+# 生成 .bin 文件
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${TARGET_NAME}> ${TARGET_NAME}.bin
+    COMMAND echo "  [+] ${TARGET_NAME}.bin generated"
+    COMMENT "Generating BIN file..."
+    BYPRODUCTS ${TARGET_NAME}.bin
+    VERBATIM
+)
+
+# 显示内存占用
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${TARGET_NAME}>
+    COMMAND echo ""
+    COMMAND echo "=================================================="
+    COMMAND echo "  Memory Usage Summary"
+    COMMAND echo "=================================================="
+    COMMENT "Analyzing memory usage..."
+    VERBATIM
 )

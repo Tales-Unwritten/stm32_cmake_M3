@@ -44,8 +44,8 @@
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:465:10:uint16_t INA228::getManufacturerID()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:470:10:uint16_t INA228::getDeviceID()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:479:6:void INA228::captureSnapshot(INA228_Snapshot&)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:502:6:void INA228::dumpRawRegisters(const INA228_Snapshot&)	160	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:577:6:void INA228::dumpEngineeringData(const INA228_Snapshot&)	232	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:502:6:void INA228::dumpRawRegisters(const INA228_Snapshot&)	144	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:577:6:void INA228::dumpEngineeringData(const INA228_Snapshot&)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:624:6:void INA228::dumpRegisters()	104	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/inc/device_ina228.hpp:325:30:static constexpr int64_t INA228::signExtend(uint64_t) [with unsigned char Bits = 20]	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/inc/device_ina228.hpp:325:30:static constexpr int64_t INA228::signExtend(uint64_t) [with unsigned char Bits = 40]	24	static

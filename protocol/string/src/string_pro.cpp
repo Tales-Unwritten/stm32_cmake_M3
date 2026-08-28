@@ -26,7 +26,7 @@
  * 当前数据通道为软串口 suart（PA9/PA10，与 boot 硬件 USART0 同引脚），
  * 硬件 debug_uart 因同引脚冲突被禁用，故挂 suart 而非 debug_uart */
 
-extern soft_uart_port suart;   // 定义于 user/src/founction.cpp
+extern soft_uart_port<256> suart;   // 定义于 user/src/founction.cpp
 
 static void send_via_debug(const uint8_t *data, uint16_t len)
 {

@@ -1,11 +1,12 @@
 #include "inter_soft_uart.hpp"
-#include "systick.h"   // get_tick（getc 超时）
+#include "stm32f1xx_hal.h"   // HAL_GetTick（getc 超时，SysTick 1ms）
 
 // ============================================================
 //  构造 / 析构
 // ============================================================
 
-soft_uart_port::soft_uart_port(const SoftUartConfig &cfg)
+template <uint16_t RX_BUF_SIZE>
+soft_uart_port<RX_BUF_SIZE>::soft_uart_port(const SoftUartConfig &cfg)
     : _tx(cfg.tx_port, cfg.tx_pin)
     , _rx(cfg.rx_port, cfg.rx_pin)
     , _baud(cfg.baud)
@@ -19,7 +20,8 @@ soft_uart_port::soft_uart_port(const SoftUartConfig &cfg)
     _buf.rx_buf = _rx_buf;     // 绑定静态接收缓冲
 }
 
-soft_uart_port::~soft_uart_port()
+template <uint16_t RX_BUF_SIZE>
+soft_uart_port<RX_BUF_SIZE>::~soft_uart_port()
 {
     deinit();
 }
@@ -28,14 +30,16 @@ soft_uart_port::~soft_uart_port()
 //  DWT 周期计数器（Cortex-M3/4/7 精确时序）
 // ============================================================
 
-void soft_uart_port::_dwt_enable()
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::_dwt_enable()
 {
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;  // 使能 DWT 模块
     DWT->CYCCNT = 0U;                                // 复位计数器
     DWT->CTRL  |= DWT_CTRL_CYCCNTENA_Msk;            // 使能周期计数
 }
 
-void soft_uart_port::_delay_cycles(uint32_t cycles)
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::_delay_cycles(uint32_t cycles)
 {
     uint32_t start = DWT->CYCCNT;
     while ((DWT->CYCCNT - start) < cycles)
@@ -44,11 +48,21 @@ void soft_uart_port::_delay_cycles(uint32_t cycles)
     }
 }
 
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::_wait_until(uint32_t target)
+{
+    while ((int32_t)(DWT->CYCCNT - target) < 0)
+    {
+        /* 忙等至绝对时刻 target；int32 差值判断正确处理 32 位回绕 */
+    }
+}
+
 // ============================================================
 //  生命周期
 // ============================================================
 
-void soft_uart_port::init()
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::init()
 {
     if (_initialized)
         return;   // 幂等
@@ -71,7 +85,8 @@ void soft_uart_port::init()
     _initialized    = true;
 }
 
-void soft_uart_port::deinit()
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::deinit()
 {
     if (!_initialized)
         return;
@@ -87,16 +102,27 @@ void soft_uart_port::deinit()
 //  发送（阻塞）
 // ============================================================
 
-void soft_uart_port::putc(uint8_t byte)
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::putc(uint8_t byte)
 {
     if (!_initialized)
         return;
 
     const uint32_t cpb = _cycles_per_bit;
 
+    // ── 位时序确定性（乱码根治）───────────────────────────────
+    // 1) 屏蔽中断：SysTick(1ms) 等 ISR 抢占会把某一位拉长数微秒，
+    //    115200 下一位仅 8.7µs，采样点随之偏移 → 单字节位错误
+    // 2) 帧锚定时序：每位绝对时刻 = 帧起点 + cpb*i，先写后推进，
+    //    GPIO 写入/调用开销不会逐位累积（旧的"写完再延时"方案
+    //    每比特固定多出 ~30 周期，10 位累积约 0.5 位 → 尾位漂移）
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+
     // 起始位（LOW）
     _tx.low();
-    _delay_cycles(cpb);
+    uint32_t next = DWT->CYCCNT + cpb;
+    _wait_until(next);
 
     // 8 个数据位，低位在前
     for (uint8_t i = 0; i < 8; i++)
@@ -105,15 +131,20 @@ void soft_uart_port::putc(uint8_t byte)
             _tx.high();
         else
             _tx.low();
-        _delay_cycles(cpb);
+        next += cpb;
+        _wait_until(next);
     }
 
     // 停止位（HIGH）
     _tx.high();
-    _delay_cycles(cpb);
+    next += cpb;
+    _wait_until(next);
+
+    __set_PRIMASK(primask);
 }
 
-void soft_uart_port::puts(const char *str)
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::puts(const char *str)
 {
     if (!str)
         return;
@@ -121,7 +152,8 @@ void soft_uart_port::puts(const char *str)
         putc((uint8_t)*str++);
 }
 
-void soft_uart_port::write(const uint8_t *data, uint16_t len)
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::write(const uint8_t *data, uint16_t len)
 {
     if (!data)
         return;
@@ -140,7 +172,8 @@ void soft_uart_port::write(const uint8_t *data, uint16_t len)
 //   6. 前进到停止位中点，同步边沿检测器
 // ============================================================
 
-bool soft_uart_port::try_getc(uint8_t *byte)
+template <uint16_t RX_BUF_SIZE>
+bool soft_uart_port<RX_BUF_SIZE>::try_getc(uint8_t *byte)
 {
     if (!_initialized || !byte)
         return false;
@@ -184,10 +217,11 @@ bool soft_uart_port::try_getc(uint8_t *byte)
 }
 
 // ============================================================
-//  接收：阻塞 + 超时（get_tick 毫秒精度）
+//  接收：阻塞 + 超时（HAL_GetTick 毫秒精度）
 // ============================================================
 
-bool soft_uart_port::getc(uint8_t *byte, uint32_t timeout_ms)
+template <uint16_t RX_BUF_SIZE>
+bool soft_uart_port<RX_BUF_SIZE>::getc(uint8_t *byte, uint32_t timeout_ms)
 {
     if (!_initialized || !byte)
         return false;
@@ -202,8 +236,8 @@ bool soft_uart_port::getc(uint8_t *byte, uint32_t timeout_ms)
         }
     }
 
-    uint32_t start = get_tick();
-    while (get_tick() - start <= timeout_ms)
+    uint32_t start = HAL_GetTick();
+    while (HAL_GetTick() - start <= timeout_ms)
     {
         if (try_getc(byte))
             return true;
@@ -215,7 +249,8 @@ bool soft_uart_port::getc(uint8_t *byte, uint32_t timeout_ms)
 //  运行时配置
 // ============================================================
 
-void soft_uart_port::set_baud(uint32_t baud)
+template <uint16_t RX_BUF_SIZE>
+void soft_uart_port<RX_BUF_SIZE>::set_baud(uint32_t baud)
 {
     _baud = baud;
     if (_initialized)
@@ -229,7 +264,8 @@ void soft_uart_port::set_baud(uint32_t baud)
 //  协议桥接（对齐 usart_port 接口）
 // ============================================================
 
-bool soft_uart_port::send_data(const uint8_t *data, uint16_t len)
+template <uint16_t RX_BUF_SIZE>
+bool soft_uart_port<RX_BUF_SIZE>::send_data(const uint8_t *data, uint16_t len)
 {
     if (!_initialized || !data || len == 0)
         return false;
@@ -239,13 +275,15 @@ bool soft_uart_port::send_data(const uint8_t *data, uint16_t len)
     return true;
 }
 
-bool soft_uart_port::send_data_it(const uint8_t *data, uint16_t len)
+template <uint16_t RX_BUF_SIZE>
+bool soft_uart_port<RX_BUF_SIZE>::send_data_it(const uint8_t *data, uint16_t len)
 {
     // 软串口无硬件中断发送：退化为同步阻塞发送（接口兼容）
     return send_data(data, len);
 }
 
-bool soft_uart_port::poll()
+template <uint16_t RX_BUF_SIZE>
+bool soft_uart_port<RX_BUF_SIZE>::poll()
 {
     if (!_initialized)
         return false;
@@ -270,3 +308,11 @@ bool soft_uart_port::poll()
 
     return _buf.rx_flag != 0;
 }
+
+// ============================================================
+//  显式实例化：默认 256 字节接收缓冲区
+//  如需要使用其他大小，请在此追加，例如：
+//    template class soft_uart_port<512>;
+// ============================================================
+
+template class soft_uart_port<256>;

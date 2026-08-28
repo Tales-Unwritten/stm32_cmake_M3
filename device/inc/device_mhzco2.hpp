@@ -63,7 +63,7 @@ public:
     static constexpr uint8_t FRAME_LEN = 9;   // 命令/响应帧长
 
     /** @brief 绑定串口（如 rs485_uart / serial_uart1）；串口由外部 init() */
-    explicit MHZCO2(usart_port& uart);
+    explicit MHZCO2(usart_port<>& uart);
 
     /** @brief 复位内部管理数据（不操作传感器） */
     void reset();
@@ -105,7 +105,7 @@ public:
 
 private:
 
-    usart_port& _uart;
+    usart_port<>& _uart;
 
     uint16_t _timeout;       // 响应超时 ms
     uint16_t _range;         // 量程设置（0 = 未设置）

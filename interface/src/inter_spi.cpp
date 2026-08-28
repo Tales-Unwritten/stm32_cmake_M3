@@ -6,20 +6,16 @@
 // ============================================================
 
 #include "inter_spi.hpp"
-#include "stm32f1xx_hal.h"
 
 // ============================================================
 //  构造 / 析构
 // ============================================================
 
 spi_port::spi_port(const SpiPortConfig &cfg)
-    : _cfg(cfg)
-    , _sck(cfg.sck_port, cfg.sck_pin)
-    , _mosi(cfg.mosi_port, cfg.mosi_pin)
-    , _miso(cfg.miso_port, cfg.miso_pin)
-    , _cs(cfg.cs_port ? cfg.cs_port : GPIOA, cfg.cs_pin != pin_none ? cfg.cs_pin : pin0)
-    , _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none)
-    , _initialized(false)
+    : _cfg(cfg), _sck(cfg.sck_port, cfg.sck_pin), _mosi(cfg.mosi_port, cfg.mosi_pin),
+      _miso(cfg.miso_port, cfg.miso_pin),
+      _cs(cfg.cs_port ? cfg.cs_port : GPIOA, cfg.cs_pin != pin_none ? cfg.cs_pin : pin0),
+      _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none), _initialized(false)
 {
 }
 
@@ -106,17 +102,17 @@ void spi_port::init()
         break;
     }
 
-    _hspi.Init.Mode              = SPI_MODE_MASTER;
-    _hspi.Init.Direction         = SPI_DIRECTION_2LINES;
-    _hspi.Init.DataSize          = _cfg.data_size;
-    _hspi.Init.CLKPolarity       = _cfg.clock_polarity;
-    _hspi.Init.CLKPhase          = _cfg.clock_phase;
-    _hspi.Init.NSS               = SPI_NSS_SOFT;
+    _hspi.Init.Mode = SPI_MODE_MASTER;
+    _hspi.Init.Direction = SPI_DIRECTION_2LINES;
+    _hspi.Init.DataSize = _cfg.data_size;
+    _hspi.Init.CLKPolarity = _cfg.clock_polarity;
+    _hspi.Init.CLKPhase = _cfg.clock_phase;
+    _hspi.Init.NSS = SPI_NSS_SOFT;
     _hspi.Init.BaudRatePrescaler = _cfg.prescaler;
-    _hspi.Init.FirstBit          = _cfg.first_bit;
-    _hspi.Init.TIMode            = SPI_TIMODE_DISABLE;
-    _hspi.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
-    _hspi.Init.CRCPolynomial     = 10;
+    _hspi.Init.FirstBit = _cfg.first_bit;
+    _hspi.Init.TIMode = SPI_TIMODE_DISABLE;
+    _hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    _hspi.Init.CRCPolynomial = 10;
 
     if (HAL_SPI_Init(&_hspi) != HAL_OK)
     {
@@ -155,27 +151,43 @@ void spi_port::deinit()
     _initialized = false;
 }
 
-// ============================================================
-//  全双工传输
-// ============================================================
-
+/**
+ * @brief  SPI 全双工传输函数（逐字节收发）
+ * @param  tx   发送数据缓冲区指针（可为 nullptr，此时发送 0xFF）
+ * @param  rx   接收数据缓冲区指针（可为 nullptr，此时丢弃接收数据）
+ * @param  len  传输字节数
+ * @note   该函数以阻塞方式逐字节进行 SPI 全双工通信，
+ *         每次调用 HAL_SPI_TransmitReceive 传输 1 字节。
+ *         适用于数据量较小、对实时性要求不高的场景。
+ */
 void spi_port::transfer(const uint8_t *tx, uint8_t *rx, uint16_t len)
 {
+    // 初始化检查：若 SPI 未初始化或传输长度为 0，直接返回
     if (!_initialized || len == 0)
         return;
 
+    // 逐字节循环传输
     for (uint16_t i = 0; i < len; i++)
     {
+        // 若发送缓冲区有效，取当前字节；否则发送 0xFF（SPI 空闲电平）
         uint8_t tx_byte = tx ? tx[i] : 0xFF;
+
+        // 接收字节临时变量，由 HAL 函数填充
         uint8_t rx_byte = 0;
 
+        // 调用 HAL 库进行阻塞式 SPI 全双工收发（传输 1 字节）
+        // 参数：SPI 句柄、发送指针、接收指针、长度、超时时间（永久等待）
         if (HAL_SPI_TransmitReceive(&_hspi, &tx_byte, &rx_byte, 1, HAL_MAX_DELAY) != HAL_OK)
         {
+            // 传输失败：若接收缓冲区有效，将当前字节置 0 表示错误
             if (rx)
                 rx[i] = 0;
+
+            // 跳过本次，继续下一字节（不中断整个传输过程）
             continue;
         }
 
+        // 传输成功：若接收缓冲区有效，存入接收到的数据
         if (rx)
             rx[i] = rx_byte;
     }

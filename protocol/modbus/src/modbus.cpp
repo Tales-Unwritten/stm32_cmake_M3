@@ -48,7 +48,7 @@
 #include "device_serial.hpp"
 #include "inter_soft_uart.hpp"
 
-extern soft_uart_port suart;   // 定义于 user/src/founction.cpp（软串口测试模式）
+extern soft_uart_port<256> suart;   // 定义于 user/src/founction.cpp（软串口测试模式）
 
 
 static void Modbus_Function01(void);

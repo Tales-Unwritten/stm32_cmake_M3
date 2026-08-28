@@ -1,17 +1,17 @@
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:11:1:INA228::INA228(inter_i2c_bus*, uint8_t)	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:19:1:INA228::INA228(inter_i2c_bus*, uint8_t, const Config&)	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:28:1:INA228::~INA228()	8	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:38:6:void INA228::_updateCurrentLSB()	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:11:1:INA228::INA228(inter_i2c_bus*, uint8_t)	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:19:1:INA228::INA228(inter_i2c_bus*, uint8_t, const Config&)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:52:5:int INA228::setMaxCurrentShunt(int32_t, uint32_t)	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:52:5:int INA228::setMaxCurrentShunt(int32_t, uint32_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:83:6:bool INA228::isConnected()	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:89:5:int INA228::getLastError()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:98:6:void INA228::init()	48	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:138:9:static uint8_t INA228::regLen(uint8_t)	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:161:6:void INA228::writeRaw(uint8_t, uint64_t, uint8_t)	4	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:161:6:void INA228::writeRaw(uint8_t, uint64_t, uint8_t)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:166:10:uint64_t INA228::readRaw(uint8_t)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:83:6:bool INA228::isConnected()	8	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:177:10:uint16_t INA228::buildConfigReg() const	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:189:10:uint16_t INA228::buildADCConfigReg() const	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:200:10:uint16_t INA228::buildDiagAlertCfg() const	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:98:6:void INA228::init()	48	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:216:9:static int32_t INA228::rawToBusVoltage_mV(uint64_t)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:223:9:int32_t INA228::rawToShuntVoltage_uV(uint64_t) const	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:233:9:int32_t INA228::rawToCurrent_mA(uint64_t) const	8	static
@@ -19,29 +19,29 @@
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:247:9:int32_t INA228::rawToPower_mW(uint64_t) const	8	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:256:9:int64_t INA228::rawToEnergy_mJ(uint64_t) const	8	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:266:9:int64_t INA228::rawToCharge_mC(uint64_t) const	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:279:9:int32_t INA228::getBusVoltage_mV()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:282:9:int32_t INA228::getShuntVoltage_uV()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:285:9:int32_t INA228::getCurrent_mA()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:288:9:int32_t INA228::getTemperature_mC()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:291:9:int32_t INA228::getPower_mW()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:294:9:int64_t INA228::getEnergy_mJ()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:297:9:int64_t INA228::getCharge_mC()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:304:6:void INA228::set_sovl_limit_mA(int32_t)	24	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:322:6:void INA228::set_suvl_limit_mA(int32_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:279:9:int32_t INA228::getBusVoltage_mV()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:282:9:int32_t INA228::getShuntVoltage_uV()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:285:9:int32_t INA228::getCurrent_mA()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:288:9:int32_t INA228::getTemperature_mC()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:291:9:int32_t INA228::getPower_mW()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:294:9:int64_t INA228::getEnergy_mJ()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:297:9:int64_t INA228::getCharge_mC()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:304:6:void INA228::set_sovl_limit_mA(int32_t)	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:322:6:void INA228::set_suvl_limit_mA(int32_t)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:340:6:void INA228::set_bovl_limit_mV(uint16_t)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:349:6:void INA228::set_buvl_limit_mV(uint16_t)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:357:6:void INA228::set_temp_limit_C(uint8_t)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:364:6:void INA228::set_pwr_limit_mW(uint32_t)	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:364:6:void INA228::set_pwr_limit_mW(uint32_t)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:380:6:void INA228::setShuntTempco(uint16_t)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:386:6:void INA228::reset()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:386:6:void INA228::reset()	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:397:6:void INA228::bindAlertPin(io_ctrl*)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:402:6:bool INA228::isAlertAsserted()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:415:19:INA228_AlertFlags INA228::readAlertFlags()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:435:6:void INA228::clearAlertLatch()	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:456:10:uint16_t INA228::readDiagAlertRaw()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:465:10:uint16_t INA228::getManufacturerID()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:470:10:uint16_t INA228::getDeviceID()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:479:6:void INA228::captureSnapshot(INA228_Snapshot&)	16	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:502:6:void INA228::dumpRawRegisters(const INA228_Snapshot&)	144	static
-/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:577:6:void INA228::dumpEngineeringData(const INA228_Snapshot&)	192	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:415:19:INA228_AlertFlags INA228::readAlertFlags()	24	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:435:6:void INA228::clearAlertLatch()	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:456:10:uint16_t INA228::readDiagAlertRaw()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:465:10:uint16_t INA228::getManufacturerID()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:470:10:uint16_t INA228::getDeviceID()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:479:6:void INA228::captureSnapshot(INA228_Snapshot&)	32	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:502:6:void INA228::dumpRawRegisters(const INA228_Snapshot&)	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:577:6:void INA228::dumpEngineeringData(const INA228_Snapshot&)	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina228.cpp:624:6:void INA228::dumpRegisters()	96	static

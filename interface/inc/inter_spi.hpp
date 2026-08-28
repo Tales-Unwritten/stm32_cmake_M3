@@ -8,8 +8,7 @@
 
 #include "inter_io_ctrl.hpp"
 #include "inter_spi_bus.hpp"
-// #include <cstdint>
-#include "stdint.h"
+#include <cstdint>
 
 // ============================================================
 //  平台中性类型

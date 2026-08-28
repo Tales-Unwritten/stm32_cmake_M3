@@ -1,9 +1,9 @@
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:28:6:virtual void soft_spi_bus::init()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:167:6:virtual void soft_spi_bus::cs_select()	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:174:6:virtual void soft_spi_bus::cs_deselect()	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:54:6:virtual void soft_spi_bus::deinit()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:soft_spi_bus::~soft_spi_bus()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:soft_spi_bus::~soft_spi_bus()	32	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:19:1:virtual soft_spi_bus::~soft_spi_bus()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:54:6:virtual void soft_spi_bus::deinit()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:28:6:virtual void soft_spi_bus::init()	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:7:1:soft_spi_bus::soft_spi_bus(const SoftSpiConfig&)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:73:6:void soft_spi_bus::_delay()	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_soft_spi.cpp:93:9:uint8_t soft_spi_bus::_transfer_byte_core(uint8_t)	40	static

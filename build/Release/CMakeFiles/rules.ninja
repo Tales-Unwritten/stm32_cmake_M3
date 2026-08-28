@@ -76,7 +76,7 @@ rule CXX_COMPILER__stm32_cmake_M3_unscanned_Release
 
 rule CXX_EXECUTABLE_LINKER__stm32_cmake_M3_Release
   command = $PRE_LINK && /usr/bin/arm-none-eabi-g++ $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
-  description = Linking CXX executable $TARGET_FILE
+  description = Linking CXX executable $TARGET_FILE; Generating HEX file...; Generating BIN file...; Analyzing memory usage...
   restat = $RESTAT
 
 
