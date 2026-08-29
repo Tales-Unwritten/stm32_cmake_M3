@@ -1,2 +1,4 @@
-/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:7:6:void function_init()	8	static
-/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:13:6:void function_loop()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:17:6:void function_init()	8	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:25:6:void function_loop()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:33:1:void __static_initialization_and_destruction_0()	56	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:33:1:cpp)	8	static

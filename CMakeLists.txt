@@ -83,6 +83,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     device/src/device_ina226.cpp
     device/src/device_ina228.cpp
     device/src/device_serial.cpp
+    device/src/device_w25qxx.cpp
 
     # ---- protocol：通信协议层 ----------------------
     # protocol/modbus/src/xxx.cpp
