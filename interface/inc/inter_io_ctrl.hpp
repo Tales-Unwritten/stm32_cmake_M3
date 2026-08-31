@@ -12,6 +12,8 @@ enum polarity : uint8_t
 {
     Low = RESET,
     Hig = !RESET,
+    active_low = Low,   // 语义别名：低有效（如 CS 选通信号）
+    active_high = Hig,  // 语义别名：高有效
 };
 
 enum pin_enum_t : uint16_t

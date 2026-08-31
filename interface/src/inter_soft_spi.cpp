@@ -11,7 +11,7 @@ soft_spi_bus::soft_spi_bus(const SoftSpiConfig &cfg)
       ,
       _cpha(cfg.mode & 0x01) // CPHA：采样沿
       ,
-      _cs_active_level(cfg.cs_active_level == SET ? 1 : 0), _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none),
+      _cs_active_level(cfg.cs_active_level), _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none),
       _initialized(false), _busy(0)
 {
 }
@@ -93,7 +93,7 @@ void soft_spi_bus::_delay()
 uint8_t soft_spi_bus::_transfer_byte_core(uint8_t data)
 {
     uint8_t rx = 0;
-    bool msb = (_bit_order == 0);
+    bool msb = (_bit_order == MSB);
 
     for (uint8_t i = 0; i < 8; i++)
     {
@@ -168,14 +168,14 @@ void soft_spi_bus::cs_select()
 {
     if (!_has_cs || !_initialized)
         return;
-    _cs.set(_cs_active_level ? true : false);
+    _cs.write(_cs_active_level); // 选中 = 输出有效电平
 }
 
 void soft_spi_bus::cs_deselect()
 {
     if (!_has_cs || !_initialized)
         return;
-    _cs.set(_cs_active_level ? false : true);
+    _cs.write(_cs_active_level == active_low ? Hig : Low); // 释放 = 输出无效电平
 }
 
 // ============================================================
@@ -207,7 +207,7 @@ void soft_spi_bus::cs_deselect()
 //    传输循环中：CPHA=0 在 SCK 第一沿采样，CPHA=1 在第二沿采样。
 // ============================================================
 
-void soft_spi_bus::set_mode(uint8_t mode)
+void soft_spi_bus::set_mode(soft_mode_enum_t mode)
 {
     _mode = mode;
     _cpol = (mode >> 1) & 0x01;
@@ -218,9 +218,9 @@ void soft_spi_bus::set_mode(uint8_t mode)
         _sck.set(_cpol ? true : false);
 }
 
-void soft_spi_bus::set_bit_order(uint8_t order)
+void soft_spi_bus::set_bit_order(soft_order_enum_t order)
 {
-    _bit_order = order & 0x01;
+    _bit_order = order;
 }
 
 void soft_spi_bus::set_speed(uint8_t delay_us)

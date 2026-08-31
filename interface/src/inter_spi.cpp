@@ -218,10 +218,7 @@ void spi_port::cs_select()
     if (!_has_cs)
         return;
 
-    if (_cfg.cs_active_level == (uint32_t)SET)
-        _cs.high();
-    else
-        _cs.low();
+    _cs.write(_cfg.cs_active_level); // 选中 = 输出有效电平
 }
 
 void spi_port::cs_deselect()
@@ -229,8 +226,5 @@ void spi_port::cs_deselect()
     if (!_has_cs)
         return;
 
-    if (_cfg.cs_active_level == (uint32_t)SET)
-        _cs.low();
-    else
-        _cs.high();
+    _cs.write(_cfg.cs_active_level == active_low ? Hig : Low); // 释放 = 输出无效电平
 }

@@ -15,7 +15,7 @@ w25q128_flash::w25q128_flash()
           GPIOA, pin7,   // MOSI
           GPIOA, pin6,   // MISO
           GPIOA, pin4,   // CS
-          RESET,                          // CS 低有效
+          active_low,                   // CS 低有效
           afio_enum_t::NONE,
           SPI_BAUDRATEPRESCALER_2,
           SPI_POLARITY_HIGH,

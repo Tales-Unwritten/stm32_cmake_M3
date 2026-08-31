@@ -27,33 +27,55 @@ enum class spi_id : uint8_t
 // ============================================================
 
 /**
- * @brief SPI 主机端口配置（STM32F1 HAL）
+ * @brief 硬件 SPI 配置结构体（适用于 STM32F1 系列）
  *
- *   prescaler:      SPI_BAUDRATEPRESCALER_2 / _4 / _8 ...
- *   clock_polarity: SPI_POLARITY_LOW / SPI_POLARITY_HIGH
- *   clock_phase:    SPI_PHASE_1EDGE / SPI_PHASE_2EDGE
- *   first_bit:      SPI_FIRSTBIT_MSB / SPI_FIRSTBIT_LSB
- *   data_size:      SPI_DATASIZE_8BIT / SPI_DATASIZE_16BIT
- *   cs_active_level: RESET（低有效）或 SET（高有效）
+ * 该结构体封装了初始化一个硬件 SPI 外设所需的全部参数，包括引脚定义、
+ * 时钟配置、数据格式、片选控制等。用户填充此结构体后，可传递给 SPI 初始化函数。
  */
 struct SpiPortConfig
 {
-    spi_id periph;                      ///< 外设 ID
-    GPIO_TypeDef *sck_port;             ///< SCK GPIO 端口
-    pin_enum_t sck_pin;                 ///< SCK 引脚掩码
-    GPIO_TypeDef *mosi_port;            ///< MOSI GPIO 端口
-    pin_enum_t mosi_pin;                ///< MOSI 引脚掩码
-    GPIO_TypeDef *miso_port;            ///< MISO GPIO 端口
-    pin_enum_t miso_pin;                ///< MISO 引脚掩码
-    GPIO_TypeDef *cs_port;              ///< CS GPIO 端口（nullptr = 不使用软件 CS）
-    pin_enum_t cs_pin;                  ///< CS 引脚掩码（pin_none = 不使用软件 CS）
-    uint32_t cs_active_level;           ///< CS 有效电平: GPIO_PIN_SET 或 GPIO_PIN_RESET
-    afio_enum_t af = afio_enum_t::NONE; ///< STM32F1 AFIO 重映射选项
-    uint32_t prescaler;                 ///< SPI_BAUDRATEPRESCALER_x
-    uint32_t clock_polarity;            ///< SPI_POLARITY_LOW / HIGH
-    uint32_t clock_phase;               ///< SPI_PHASE_1EDGE / 2EDGE
-    uint32_t first_bit;                 ///< SPI_FIRSTBIT_MSB / LSB
-    uint16_t data_size;                 ///< SPI_DATASIZE_8BIT / 16BIT
+    spi_id periph;                      ///< 外设 ID，指定使用哪个 SPI 外设（如 spi1、spi2,spi3）
+                                        ///< 可选值：通常是枚举类型，例如 SPI1、SPI2 等
+
+    GPIO_TypeDef *sck_port;             ///< SCK 时钟引脚所在的 GPIO 端口（如 GPIOA、GPIOB）
+    pin_enum_t sck_pin;                 ///< SCK 引脚编号（如 GPIO_PIN_5、GPIO_PIN_13）
+                                        ///< 注意：不同 SPI 外设的引脚有固定映射，需参考数据手册选择正确的端口和引脚
+
+    GPIO_TypeDef *mosi_port;            ///< MOSI（主机输出从机输入）引脚所在的 GPIO 端口
+    pin_enum_t mosi_pin;                ///< MOSI 引脚编号
+
+    GPIO_TypeDef *miso_port;            ///< MISO（主机输入从机输出）引脚所在的 GPIO 端口
+    pin_enum_t miso_pin;                ///< MISO 引脚编号
+
+    GPIO_TypeDef *cs_port;              ///< CS（片选）引脚所在的 GPIO 端口，若为 nullptr 表示不使用软件控制的 CS
+                                        ///< 通常硬件 SPI 的 NSS 引脚可由硬件管理，但也可用普通 GPIO 软件控制片选
+    pin_enum_t cs_pin;                  ///< CS 引脚编号，若 cs_port 为 nullptr 则忽略此值；若使用软件 CS，则此引脚有效
+
+    polarity cs_active_level = active_low; ///< CS 有效电平（选中从机时的电平）
+                                        ///< 可选值：active_low（低电平有效）或 active_high（高电平有效）
+                                        ///< 注意：大多数 SPI 从机使用低电平有效（即 CS 拉低时选中）
+
+    afio_enum_t af = afio_enum_t::NONE; ///< AFIO 重映射选项，用于将 SPI 引脚重映射到其他位置（仅 STM32F1 系列需要）
+                                        ///< 默认值为 NONE（不重映射），当默认引脚被占用或需要特殊布局时设置相应重映射值
+                                        ///< 可选值：如 AFIO_NONE、AFIO_SPI1_REMAP、AFIO_SPI2_REMAP 等
+
+    uint32_t prescaler;                 ///< SPI 时钟预分频值，决定 SCK 频率 = PCLK / 预分频系数
+                                        ///< 可选值：SPI_BAUDRATEPRESCALER_2、_4、_8、_16、_32、_64、_128、_256
+                                        ///< 注意：需要根据从机支持的最大时钟频率合理选择，避免通信失败
+
+    uint32_t clock_polarity;            ///< 时钟极性（CPOL），定义 SCK 空闲时的电平
+                                        ///< 可选值：SPI_POLARITY_LOW（空闲低）或 SPI_POLARITY_HIGH（空闲高）
+
+    uint32_t clock_phase;               ///< 时钟相位（CPHA），定义数据采样发生在第几个时钟边沿
+                                        ///< 可选值：SPI_PHASE_1EDGE（第一边沿采样）或 SPI_PHASE_2EDGE（第二边沿采样）
+                                        ///< 与 clock_polarity 组合成四种 SPI 模式（Mode 0~3）
+
+    uint32_t first_bit;                 ///< 数据位传输顺序
+                                        ///< 可选值：SPI_FIRSTBIT_MSB（高位先发）或 SPI_FIRSTBIT_LSB（低位先发）
+
+    uint16_t data_size;                 ///< 数据帧大小，通常为 8 位或 16 位
+                                        ///< 可选值：SPI_DATASIZE_8BIT 或 SPI_DATASIZE_16BIT
+                                        ///< 注意：某些 SPI 外设还支持其他数据宽度，具体参考芯片手册
 };
 
 // ============================================================
@@ -66,7 +88,7 @@ struct SpiPortConfig
  * 使用示例（单设备，自动 CS 控制）：
  *   static spi_port flash({
  *       spi_id::spi1, GPIOA, pin5, GPIOA, pin7,
- *       GPIOA, pin6, GPIOA, pin4, GPIO_PIN_RESET,
+ *       GPIOA, pin6, GPIOA, pin4, active_low,
  *       afio_enum_t::NONE, SPI_BAUDRATEPRESCALER_4,
  *       SPI_POLARITY_HIGH, SPI_PHASE_2EDGE, SPI_FIRSTBIT_MSB, SPI_DATASIZE_8BIT
  *   });

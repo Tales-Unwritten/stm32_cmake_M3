@@ -1,7 +1,7 @@
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:200:9:virtual uint8_t spi_port::transfer_byte(uint8_t)	32	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:163:6:virtual void spi_port::transfer(const uint8_t*, uint8_t*, uint16_t)	56	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:216:6:virtual void spi_port::cs_select()	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:227:6:virtual void spi_port::cs_deselect()	0	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:224:6:virtual void spi_port::cs_deselect()	0	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:14:1:spi_port::spi_port(const SpiPortConfig&)	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:31:6:void spi_port::_enable_clock()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/interface/src/inter_spi.cpp:47:6:void spi_port::_disable_clock()	0	static
