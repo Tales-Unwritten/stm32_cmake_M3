@@ -2,7 +2,7 @@
 #include "delay.h"
 
 /* USART1, PA9(TX), PA10(RX), 115200, 256B RX */
-// usart_port<256> debug_uart({usart1, GPIOA, pin9, GPIOA, pin10, afio_enum_t::NONE, 115200});
+usart_port<256> debug_uart({usart1, GPIOA, pin9, GPIOA, pin10, afio_enum_t::NONE, 115200});
 
 /* USART2, PD5(TX), PD6(RX), AF7, 115200, 256B RX */
 usart_port<256> rs232_uart({usart2, GPIOD, pin5, GPIOD, pin6, afio_enum_t::NONE, 115200});
@@ -14,10 +14,10 @@ soft_uart_port<256> soft_rs485({GPIOA, pin3, GPIOA, pin2, 115200});
 
 io_ctrl en_485(GPIOB, pin12);
 
-// void DebugPort_Init(void)
-// {
-//     debug_uart.init();
-// }
+void DebugPort_Init(void)
+{
+    debug_uart.init();
+}
 
 // void RS485Port_Init(void)
 // {

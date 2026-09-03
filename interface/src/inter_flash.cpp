@@ -1,15 +1,12 @@
 // ============================================================
-// @platform GD32F4xx（当前平台）
+// @platform STM32F103xx（从 GD32F4xx 版本移植，使用 HAL 库）
 // ============================================================
 
 #include "inter_flash.hpp"
 
-#include <array>
-
-// 必须先包含 gd32f4xx.h：其 extern "C" 块包裹 libopt 下所有外设声明，
-// 否则 gd32f4xx_fmc.h 的 fmc_* 函数在 C++ 下会被名字修饰导致链接失败
-#include "gd32f4xx.h"
-#include "gd32f4xx_fmc.h"
+// STM32F1xx HAL 库头文件
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_flash_ex.h"
 
 uint32_t flash_port::_safe_start = 0;
 uint32_t flash_port::_safe_end = 0;
@@ -17,103 +14,48 @@ uint32_t flash_port::diag_fail_addr = 0;
 uint8_t flash_port::diag_fail_stage = 0;
 
 // ════════════════════════════════════════════════════════════
-//  GD32F4xx 扇区布局（板上实测确认，勿用统一公式替代）
-//    每个 1MB bank：4×16KB + 1×64KB + 7×128KB
-//    3MB 芯片：双 bank 之后追加 4×256KB
-//  容量由 FLASH_CAPACITY_KB（inter_flash.hpp）决定，编译期生成表
+//  STM32F10xxx Flash 页布局
+//    与 GD32F4xx 不同：同一芯片内所有页大小一致（1KB 或 2KB，由密度决定），
+//    不存在混合扇区大小，因此不需要 GD32 版本那种"扇区查找表 + sector_to_sn()
+//    位域编码"，直接按 FLASH_PAGE_SIZE 整除即可定位页首地址。
 // ════════════════════════════════════════════════════════════
-struct FmcSectorInfo
-{
-    uint32_t base;
-    uint32_t size;
-    uint8_t sector;
-};
-
 static constexpr uint32_t kFlashBase = 0x08000000u;
-static constexpr uint32_t kBankCount = FLASH_CAPACITY_KB / 1024u;                         // 1 / 2 / 3
-static constexpr uint32_t kBankSectors = 12;                                              // 4×16K + 1×64K + 7×128K
-static constexpr uint32_t kSectorCount = (kBankCount >= 3) ? (2 * kBankSectors + 4)       // 3MB：24 + 4×256K
-                                                           : (kBankCount * kBankSectors); // 1MB：12；2MB：24
+static constexpr uint32_t kPageSize = FLASH_PAGE_SIZE; // 由 HAL 库头文件根据芯片型号定义
+static constexpr uint32_t kFlashTotalBytes = FLASH_CAPACITY_KB * 1024u;
 
-static constexpr std::array<FmcSectorInfo, kSectorCount> make_sector_table()
-{
-    std::array<FmcSectorInfo, kSectorCount> t{};
-    uint32_t base = kFlashBase;
-    uint32_t i = 0;
-    for (uint32_t b = 0; b < kBankCount && b < 2; b++)
-    {
-        for (uint32_t s = 0; s < 4; s++)
-        {
-            t[i] = {base, 16u * 1024, (uint8_t)i};
-            i++;
-            base += 16u * 1024;
-        }
-        t[i] = {base, 64u * 1024, (uint8_t)i};
-        i++;
-        base += 64u * 1024;
-        for (uint32_t s = 0; s < 7; s++)
-        {
-            t[i] = {base, 128u * 1024, (uint8_t)i};
-            i++;
-            base += 128u * 1024;
-        }
-    }
-    if (kBankCount >= 3)
-    {
-        for (uint32_t s = 0; s < 4; s++)
-        {
-            t[i] = {base, 256u * 1024, (uint8_t)i};
-            i++;
-            base += 256u * 1024;
-        }
-    }
-    return t;
-}
-
-static constexpr std::array<FmcSectorInfo, kSectorCount> kSectors = make_sector_table();
-
-static_assert(FLASH_CAPACITY_KB == 1024 || FLASH_CAPACITY_KB == 2048 || FLASH_CAPACITY_KB == 3072,
-              "FLASH_CAPACITY_KB 仅支持 1024 / 2048 / 3072");
-
-static constexpr uint32_t table_total()
-{
-    uint32_t sum = 0;
-    for (const auto &s : kSectors)
-        sum += s.size;
-    return sum;
-}
-static_assert(table_total() == FLASH_CAPACITY_KB * 1024u, "扇区表总大小与 FLASH_CAPACITY_KB 不一致");
-
-static const FmcSectorInfo *find_sector(uint32_t addr)
-{
-    for (const auto &s : kSectors)
-    {
-        if (addr >= s.base && addr < s.base + s.size)
-            return &s;
-    }
-    return nullptr;
-}
+// 静态检查：页大小必须是 1024 或 2048（STM32F1 系列仅这两种情况）
+static_assert(kPageSize == 1024u || kPageSize == 2048u,
+              "FLASH_PAGE_SIZE 仅支持 1024（小/中容量）或 2048（大容量/互联型/XL-density）");
+static_assert((FLASH_CAPACITY_KB * 1024u) % kPageSize == 0, "FLASH_CAPACITY_KB 必须是 FLASH_PAGE_SIZE 的整数倍");
 
 /**
- * @brief 扇区号 → FMC SN 位域编码
- * GD32F4xx 的 SN 编码非连续：bank0 = 0~11，bank1 = 16~27（扇区号+4，12~15 保留）。
- * 依据 gd32f4xx_fmc.h：CTL_SECTOR_NUMBER_12 = CTL_SN(16) ... CTL_SECTOR_NUMBER_23 = CTL_SN(27)
+ * @brief 计算 addr 所在页的页首地址
+ * @return true  = addr 落在本芯片 Flash 地址范围内，page_base 有效
+ *         false = addr 超出芯片总容量范围
+ * @note 暂不支持 XL-density（768KB~1MB）芯片的双 Bank：这类芯片在 0x08080000
+ *       处还有第二个独立 FPEC（KEYR2/SR2/CR2/AR2，寄存器基址偏移 +0x40），
+ *       跨过该边界的地址需要切换到 Bank2 的寄存器组，此实现仅覆盖单 Bank
+ *       （容量 ≤512KB）场景，与常见的 STM32F103C8/RB/RC/RE/RG 等主流型号一致。
  */
-static uint32_t sector_to_sn(uint8_t sector)
+static bool page_base_of(uint32_t addr, uint32_t &page_base)
 {
-    return (sector >= 12u) ? (uint32_t)(sector + 4u) : (uint32_t)sector;
+    if (addr < kFlashBase || addr >= kFlashBase + kFlashTotalBytes)
+        return false;
+    uint32_t offset = addr - kFlashBase;
+    page_base = kFlashBase + (offset / kPageSize) * kPageSize;
+    return true;
 }
 
 void flash_port::init(uint32_t safe_start, uint32_t safe_size)
 {
     _safe_start = safe_start;
     _safe_end = safe_start + safe_size;
-    fmc_unlock();
+    HAL_FLASH_Unlock();
 }
 
 void flash_port::lock()
 {
-    fmc_lock();
+    HAL_FLASH_Lock();
 }
 
 bool flash_port::_in_range(uint32_t addr, uint32_t len)
@@ -124,59 +66,43 @@ bool flash_port::_in_range(uint32_t addr, uint32_t len)
     return (addr >= _safe_start) && ((addr + len) <= _safe_end);
 }
 
-bool flash_port::_wait_busy()
-{
-    uint32_t timeout = 0xFFFF;
-    while (fmc_flag_get(FMC_FLAG_BUSY))
-    {
-        if (--timeout == 0)
-        {
-            fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
-            return false;
-        }
-    }
-    return true;
-}
-
 // ════════════════════════════════════════════════════════════
 //  擦除
 // ════════════════════════════════════════════════════════════
 
 bool flash_port::erase(uint32_t addr)
 {
-    // 扇区擦除会清除整个扇区，需确保整个扇区在安全区内
-    // 扇区边界查表（每 1MB bank：4×16K+64K+7×128K；3MB 尾部 4×256K），
-    // 避免按统一 128KB 计算导致 bank1 起始 16K/64K 扇区被误判
-    const FmcSectorInfo *sec = find_sector(addr);
-    if (sec == nullptr)
+    // 页擦除会清除整页，需确保整页都在安全区内
+    uint32_t page_base;
+    if (!page_base_of(addr, page_base))
     {
         diag_fail_addr = addr;
         diag_fail_stage = 1;
         return false;
     }
-    if (sec->base < _safe_start || (sec->base + sec->size) > _safe_end)
+    if (page_base < _safe_start || (page_base + kPageSize) > _safe_end)
     {
         diag_fail_addr = addr;
         diag_fail_stage = 2;
         return false;
     }
 
-    fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
+    // 清除可能存在的错误标志（HAL 库中的宏）
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
 
-    // 必须用扇区擦除（fmc_sector_erase）：fmc_page_erase 仅擦 4KB 页，
-    // 与扇区表（16K/64K/128K）粒度不匹配，会导致同扇区其余部分残留旧数据。
-    // 入参须经 sector_to_sn() 编码（bank1 扇区号+4）进 SN 位域，
-    // 传裸扇区号会映射到错误扇区（如 9 -> SN=1 误擦 boot 区，12 -> 保留值擦除失败）
-    if (fmc_sector_erase(CTL_SN(sector_to_sn(sec->sector))) != FMC_READY)
+    // 使用 HAL 库的页擦除函数
+    FLASH_EraseInitTypeDef erase_init;
+    uint32_t page_error = 0;
+    erase_init.TypeErase = FLASH_TYPEERASE_PAGES;
+    erase_init.PageAddress = page_base;
+    erase_init.NbPages = 1;
+
+    HAL_StatusTypeDef status = HAL_FLASHEx_Erase(&erase_init, &page_error);
+    if (status != HAL_OK)
     {
         diag_fail_addr = addr;
-        diag_fail_stage = 3;
-        return false;
-    }
-    if (!_wait_busy())
-    {
-        diag_fail_addr = addr;
-        diag_fail_stage = 4;
+        // 区分超时和其他错误
+        diag_fail_stage = (status == HAL_TIMEOUT) ? 4 : 3;
         return false;
     }
     return true;
@@ -186,16 +112,47 @@ bool flash_port::erase(uint32_t addr)
 //  写入
 // ════════════════════════════════════════════════════════════
 
+bool flash_port::_write_halfword(uint32_t addr, uint16_t data)
+{
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
+    HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, addr, data);
+    return (status == HAL_OK);
+}
+
 bool flash_port::write_word(uint32_t addr, uint32_t data)
 {
     if (!_in_range(addr, 4))
         return false; // 安全检查
 
-    fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
-
-    if (fmc_word_program(addr, data) != FMC_READY)
+    // ── 4 字节对齐保护（为什么必须加）： ─────────────────────
+    //  1. F103 FPEC 只接受 16-bit 半字编程，且目标地址必须 2 字节对齐；
+    //     非半字长的写入会触发总线错误（PM0075 §2.3.3）。
+    //  2. HAL 的 WORD 编程 = 对 addr 与 addr+2 两个半字串行编程，
+    //     所以 write_word 的语义要求 addr 本身 4 字节对齐。
+    //  3. 若调用方传入非 4 字节对齐地址（典型：奇数地址），第一个半字将
+    //     落在奇地址上——实测该操作会让 FPEC 进入 BSY=1 卡死状态，
+    //     随后 CPU 任何 Flash 取指都被永久阻塞 → 整机死机，
+    //     连 HAL 错误码都得不到（比返回 false 严重得多）。
+    //  因此这里必须在进 HAL 前拦截，把“死机级风险”降级为
+    //  “可预期的 false + diag_fail_stage=6”。
+    if (addr & 0x3u)
+    {
+        diag_fail_addr = addr;
+        diag_fail_stage = 6; // 6 = 地址未对齐（write_word 需 4 字节对齐）
         return false;
-    return _wait_busy();
+    }
+
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
+
+    // HAL 库的 FLASH_TYPEPROGRAM_WORD 会内部拆成两个半字编程，并自动处理等待
+    HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, addr, data);
+    if (status != HAL_OK)
+    {
+        diag_fail_addr = addr;
+        diag_fail_stage = (status == HAL_TIMEOUT) ? 4 : 5; // 5 表示编程失败
+        return false;
+    }
+    return true;
 }
 
 bool flash_port::write_byte(uint32_t addr, uint8_t data)
@@ -203,19 +160,23 @@ bool flash_port::write_byte(uint32_t addr, uint8_t data)
     if (!_in_range(addr, 1))
         return false;
 
-    // Flash 只能将 bit 从 1 编程为 0，不能从 0 变为 1（需先擦除）
-    uint32_t word_addr = addr & ~0x3;
-    uint32_t shift = (addr & 0x3) * 8;
-    uint32_t old_word = *(volatile uint32_t *)word_addr;
-    uint32_t old_byte = (old_word >> shift) & 0xFF;
-    uint32_t new_byte = (uint32_t)data;
+    // 平台约束（PM0075 §2.3.3）：F103 FPEC 半字编程前会校验目标半字是否处于
+    // 擦除态(0xFFFF)，非擦除态则跳过编程并置 PGERR。因此同一 2B 半字在一次
+    // 页擦除周期内只能成功编程一次；要改写必须先整页擦除。
+    // 注意：F103 编程粒度是 16-bit half-word（GD32F4xx 是 32-bit word），
+    // 所以读-改-写的对齐单位从 4 字节改成了 2 字节。
+    uint32_t hw_addr = addr & ~0x1u;
+    uint32_t shift = (addr & 0x1u) * 8u;
+    uint16_t old_hw = *(volatile uint16_t *)hw_addr;
+    uint16_t old_byte = (uint16_t)((old_hw >> shift) & 0xFFu);
+    uint16_t new_byte = data;
 
     // 如果新值试图将 old_byte 中的某个 0 bit 改为 1，Flash 无法做到
     if ((old_byte & new_byte) != new_byte)
         return false;
 
-    uint32_t new_word = (old_word & ~(0xFFUL << shift)) | (new_byte << shift);
-    return write_word(word_addr, new_word);
+    uint16_t new_hw = (uint16_t)((old_hw & ~(0xFFu << shift)) | (new_byte << shift));
+    return _write_halfword(hw_addr, new_hw);
 }
 
 bool flash_port::write_bytes(uint32_t addr, const uint8_t *data, uint16_t len)
@@ -223,9 +184,41 @@ bool flash_port::write_bytes(uint32_t addr, const uint8_t *data, uint16_t len)
     if (!_in_range(addr, len))
         return false;
 
-    for (uint16_t i = 0; i < len; i++)
+    // F103 FPEC：目标半字必须处于擦除态才能编程（PM0075 §2.3.3），
+    // 同一 2B 半字每次页擦除周期只能编程一次。因此不能逐字节调用
+    // write_byte（相邻字节 = 对同一半字编程两次，第二次必被硬件跳过）。
+    // 这里把缓冲区相邻字节合成半字，每个半字只编程一次。
+    // 约定：调用前必须先整页擦除；孤立的头/尾单字节按伙伴字节=0xFF
+    // （擦除态）合成半字。
+    uint32_t a = addr;
+    const uint8_t *d = data;
+    uint16_t n = len;
+
+    // 奇数起始：头 1 字节与擦除态高字节合成半字
+    if (a & 0x1u)
     {
-        if (!write_byte(addr + i, data[i]))
+        uint16_t hw = (uint16_t)(0xFF00u | d[0]);
+        if (!_write_halfword(a & ~0x1u, hw))
+            return false;
+        a++;
+        d++;
+        n--;
+    }
+    // 成对字节：每次合成一个完整半字并编程一次
+    while (n >= 2)
+    {
+        uint16_t hw = (uint16_t)(d[0] | ((uint16_t)d[1] << 8));
+        if (!_write_halfword(a, hw))
+            return false;
+        a += 2;
+        d += 2;
+        n -= 2;
+    }
+    // 奇数长度：尾部 1 字节（此时 a 必为偶地址）与擦除态高字节合成
+    if (n == 1)
+    {
+        uint16_t hw = (uint16_t)(d[0] | 0xFF00u);
+        if (!_write_halfword(a, hw))
             return false;
     }
     return true;

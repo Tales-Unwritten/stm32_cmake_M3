@@ -34,6 +34,13 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable CMake support for ASM, C and C++ languages（C/C++ 混编）
 enable_language(C ASM CXX)
 
+# ── 片上 Flash 驱动自测开关（默认 OFF，不影响正常固件） ──────────
+# ON 时：
+#   1. 追加 function/src/flash_selftest.cpp（片上自测主体）
+#   2. 定义 ENABLE_FLASH_SELFTEST，function_init() 改为执行自测
+#   3. 使用 preset Selftest 构建到 build/selftest
+option(FLASH_SELFTEST "Build with on-chip flash_port selftest harness" OFF)
+
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -72,6 +79,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_usart.cpp
     interface/src/inter_soft_uart.cpp
     interface/src/inter_spi.cpp
+    interface/src/inter_flash.cpp
 
 
     # interface/src/inter_adc.cpp
@@ -113,7 +121,20 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 # Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
+    # 芯片实际容量：STM32F103VET6 = 512KB（inter_flash.hpp 默认 128KB 仅适用于
+    # C8T6/RCT6，必须在此覆盖，否则驱动对 >128KB 地址的擦除会静默失败）
+    FLASH_CAPACITY_KB=512
 )
+
+# 自测固件：仅在 FLASH_SELFTEST=ON 时追加源文件与编译宏
+if(FLASH_SELFTEST)
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        function/src/flash_selftest.cpp
+    )
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        ENABLE_FLASH_SELFTEST=1
+    )
+endif()
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)

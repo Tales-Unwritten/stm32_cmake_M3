@@ -46,5 +46,17 @@
     "command": "cmake --preset Release && cmake --build --preset Release -j$(nproc 2>/dev/null || echo 4) && probe-rs download --speed 4000 --chip STM32F103ZETx build/Release/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
     "tags": ["flash"],
     "reveal": "always"
+  },
+  {
+    "label": "git: push to both remotes (Gitee + GitHub)",
+    "command": "git push origin main && git push github main",
+    "tags": ["git"],
+    "reveal": "always"
+  },
+  {
+    "label": "git: pull from both remotes (Gitee + GitHub)",
+    "command": "git pull origin main && git pull github main",
+    "tags": ["git"],
+    "reveal": "always"
   }
 ]

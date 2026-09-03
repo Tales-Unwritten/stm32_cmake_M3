@@ -1,4 +1,4 @@
-/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_io_ctrl.hpp:369:24:bool io_ctrl::is_initialized() const	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/interface/inc/inter_io_ctrl.hpp:371:24:bool io_ctrl::is_initialized() const	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/inc/device_ina226.hpp:143:12:constexpr INA226::Config::Config()	16	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina226.cpp:13:1:INA226::INA226(inter_i2c_bus*, uint8_t)	24	static
 /home/loopy/Documents/project/stm32_cmake_M3/device/src/device_ina226.cpp:18:1:INA226::INA226(inter_i2c_bus*, uint8_t, const Config&)	32	static

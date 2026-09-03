@@ -1,5 +1,5 @@
 {
-  "date": "2026-08-29T17:34:15.549150269Z",
+  "date": "2026-09-03T07:47:16.586947617Z",
   "data": {
     "/home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt": [
       {
@@ -41,13 +41,19 @@
     ],
     "/home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt": [
       {
-        "label": "CMAKE_C_STANDARD",
+        "label": "CMAKE_CXX_STANDARD_REQUIRED",
         "kind": 12,
         "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSetup compiler settings"
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
       },
       {
-        "label": "CMAKE_C_STANDARD_REQUIRED",
+        "label": "CMAKE_EXPORT_COMPILE_COMMANDS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nEnable compile command to ease indexing with e.g. clangd"
+      },
+      {
+        "label": "CMAKE_BUILD_TYPE",
         "kind": 12,
         "detail": "Value",
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
@@ -59,40 +65,34 @@
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
       },
       {
-        "label": "CMAKE_CXX_STANDARD",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nC++20：支持 designated initializers，Config 可只配置部分字段"
-      },
-      {
-        "label": "CMAKE_CXX_STANDARD_REQUIRED",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
-      },
-      {
-        "label": "CMAKE_BUILD_TYPE",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
-      },
-      {
         "label": "CMAKE_PROJECT_NAME",
         "kind": 12,
         "detail": "Value",
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSet the project name"
       },
       {
-        "label": "CMAKE_EXPORT_COMPILE_COMMANDS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nEnable compile command to ease indexing with e.g. clangd"
-      },
-      {
         "label": "TARGET_NAME",
         "kind": 12,
         "detail": "Value",
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\n获取目标文件名（使用生成器表达式，自动处理 .elf 后缀等问题）"
+      },
+      {
+        "label": "CMAKE_CXX_STANDARD",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nC++20：支持 designated initializers，Config 可只配置部分字段"
+      },
+      {
+        "label": "CMAKE_C_STANDARD_REQUIRED",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt"
+      },
+      {
+        "label": "CMAKE_C_STANDARD",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSetup compiler settings"
       }
     ],
     "/home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake": [

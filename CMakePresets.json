@@ -23,6 +23,14 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
+        },
+        {
+            "name": "selftest",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "FLASH_SELFTEST": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -33,6 +41,10 @@
         {
             "name": "Release",
             "configurePreset": "Release"
+        },
+        {
+            "name": "selftest",
+            "configurePreset": "selftest"
         }
     ]
 }
