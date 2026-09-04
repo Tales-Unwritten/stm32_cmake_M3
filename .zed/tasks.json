@@ -48,14 +48,14 @@
     "reveal": "always"
   },
   {
-    "label": "git: push to both remotes (Gitee + GitHub)",
-    "command": "git push origin main && git push github main",
+    "label": "git: push to all remotes (Gitee + GitHub + GitCode)",
+    "command": "git push origin main && git push github main && git push gitcode main",
     "tags": ["git"],
     "reveal": "always"
   },
   {
-    "label": "git: pull from both remotes (Gitee + GitHub)",
-    "command": "git pull origin main && git pull github main",
+    "label": "git: pull from all remotes (Gitee + GitHub + GitCode)",
+    "command": "git pull origin main && git pull github main && git pull gitcode main",
     "tags": ["git"],
     "reveal": "always"
   }
