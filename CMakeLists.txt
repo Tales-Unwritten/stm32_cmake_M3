@@ -132,7 +132,7 @@ if(FLASH_SELFTEST)
         function/src/flash_selftest.cpp
     )
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-        ENABLE_FLASH_SELFTEST=1
+        ENABLE_FLASH_SELFTEST=0
     )
 endif()
 

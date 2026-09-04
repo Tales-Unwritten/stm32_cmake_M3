@@ -554,6 +554,8 @@ Discarded input sections
  .text          0x00000000        0x0 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
  .data          0x00000000        0x0 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
  .bss           0x00000000        0x0 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
+ .bss.deep_flash
+                0x00000000        0x1 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
  .bss.mimo_flash
                 0x00000000        0x1 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
  .text          0x00000000        0x0 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
@@ -788,10 +790,8 @@ Discarded input sections
                 0x00000000       0x2c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
  .text._ZN10flash_port15_write_halfwordEmt
                 0x00000000       0x24 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
- .text._ZN10flash_port10write_wordEmm
-                0x00000000       0x70 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
  .text._ZN10flash_port11write_bytesEmPKht
-                0x00000000       0xa4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x00000000       0xac CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
  .text._ZN10flash_port9read_wordEm
                 0x00000000        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
  .text._ZN10flash_port10read_bytesEmPht
@@ -1535,7 +1535,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
                 0x08000000                g_pfnVectors
                 0x080001e4                        . = ALIGN (0x4)
 
-.text           0x080001e4     0x3588
+.text           0x080001e4     0x35f8
                 0x080001e4                        . = ALIGN (0x4)
  *(.text)
  .text          0x080001e4       0x88 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
@@ -1738,470 +1738,469 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
  .text.startup._GLOBAL__sub_I_spi_bus_64
                 0x080011e4       0x58 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
  .text.function_init
-                0x0800123c       0x80 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
+                0x0800123c       0x70 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
                 0x0800123c                function_init
  .text._ZN7io_ctrlC2EP12GPIO_TypeDef10pin_enum_t
-                0x080012bc       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080012bc                io_ctrl::io_ctrl(GPIO_TypeDef*, pin_enum_t)
-                0x080012bc                io_ctrl::io_ctrl(GPIO_TypeDef*, pin_enum_t)
+                0x080012ac       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080012ac                io_ctrl::io_ctrl(GPIO_TypeDef*, pin_enum_t)
+                0x080012ac                io_ctrl::io_ctrl(GPIO_TypeDef*, pin_enum_t)
  .text._ZN7io_ctrlD2Ev
-                0x080012d4       0x20 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080012d4                io_ctrl::~io_ctrl()
-                0x080012d4                io_ctrl::~io_ctrl()
+                0x080012c4       0x20 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080012c4                io_ctrl::~io_ctrl()
+                0x080012c4                io_ctrl::~io_ctrl()
  .text._ZN7io_ctrl13_enable_clockEv
-                0x080012f4      0x10c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080012f4                io_ctrl::_enable_clock()
+                0x080012e4      0x10c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080012e4                io_ctrl::_enable_clock()
  .text._ZN7io_ctrl4initE11mode_enum_t11pull_enum_t12speed_enum_t
-                0x08001400       0x3c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x08001400                io_ctrl::init(mode_enum_t, pull_enum_t, speed_enum_t)
+                0x080013f0       0x3c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080013f0                io_ctrl::init(mode_enum_t, pull_enum_t, speed_enum_t)
  .text._ZN7io_ctrl6deinitEv
-                0x0800143c       0x24 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x0800143c                io_ctrl::deinit()
+                0x0800142c       0x24 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x0800142c                io_ctrl::deinit()
  .text._ZN7io_ctrl6set_afE11afio_enum_t
-                0x08001460      0x340 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x08001460                io_ctrl::set_af(afio_enum_t)
+                0x08001450      0x340 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x08001450                io_ctrl::set_af(afio_enum_t)
  .text._ZN7io_ctrl4highEv
-                0x080017a0        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080017a0                io_ctrl::high()
+                0x08001790        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x08001790                io_ctrl::high()
  .text._ZN7io_ctrl3lowEv
-                0x080017a8        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080017a8                io_ctrl::low()
+                0x08001798        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x08001798                io_ctrl::low()
  .text._ZN7io_ctrl3setEb
-                0x080017b0       0x10 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080017b0                io_ctrl::set(bool)
+                0x080017a0       0x10 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080017a0                io_ctrl::set(bool)
  .text._ZN7io_ctrl5writeE8polarity
-                0x080017c0       0x10 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080017c0                io_ctrl::write(polarity)
+                0x080017b0       0x10 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080017b0                io_ctrl::write(polarity)
  .text._ZN7io_ctrl4readEv
-                0x080017d0       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                0x080017d0                io_ctrl::read()
+                0x080017c0       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+                0x080017c0                io_ctrl::read()
  .text._ZN12soft_spi_busD2Ev
-                0x080017e8       0x78 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x080017e8                soft_spi_bus::~soft_spi_bus()
-                0x080017e8                soft_spi_bus::~soft_spi_bus()
+                0x080017d8       0x78 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x080017d8                soft_spi_bus::~soft_spi_bus()
+                0x080017d8                soft_spi_bus::~soft_spi_bus()
  .text._ZN12soft_spi_busD0Ev
-                0x08001860       0x14 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001860                soft_spi_bus::~soft_spi_bus()
+                0x08001850       0x14 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001850                soft_spi_bus::~soft_spi_bus()
  .text._ZN12soft_spi_bus9cs_selectEv
-                0x08001874       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001874                soft_spi_bus::cs_select()
+                0x08001864       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001864                soft_spi_bus::cs_select()
  .text._ZN12soft_spi_bus11cs_deselectEv
-                0x0800188c       0x20 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x0800188c                soft_spi_bus::cs_deselect()
+                0x0800187c       0x20 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x0800187c                soft_spi_bus::cs_deselect()
  .text._ZN12soft_spi_bus6deinitEv
-                0x080018ac       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x080018ac                soft_spi_bus::deinit()
+                0x0800189c       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x0800189c                soft_spi_bus::deinit()
  .text._ZN12soft_spi_bus4initEv
-                0x080018f4       0xa4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x080018f4                soft_spi_bus::init()
+                0x080018e4       0xa4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x080018e4                soft_spi_bus::init()
  .text._ZN12soft_spi_busC2ERK13SoftSpiConfig
-                0x08001998       0x84 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001998                soft_spi_bus::soft_spi_bus(SoftSpiConfig const&)
-                0x08001998                soft_spi_bus::soft_spi_bus(SoftSpiConfig const&)
+                0x08001988       0x84 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001988                soft_spi_bus::soft_spi_bus(SoftSpiConfig const&)
+                0x08001988                soft_spi_bus::soft_spi_bus(SoftSpiConfig const&)
  .text._ZN12soft_spi_bus19_transfer_byte_coreEh
-                0x08001a1c       0xf0 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001a1c                soft_spi_bus::_transfer_byte_core(unsigned char)
+                0x08001a0c       0xf0 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001a0c                soft_spi_bus::_transfer_byte_core(unsigned char)
  .text._ZN12soft_spi_bus13transfer_byteEh
-                0x08001b0c        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001b0c                soft_spi_bus::transfer_byte(unsigned char)
+                0x08001afc        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001afc                soft_spi_bus::transfer_byte(unsigned char)
  .text._ZN12soft_spi_bus8transferEPKhPht
-                0x08001b10       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08001b10                soft_spi_bus::transfer(unsigned char const*, unsigned char*, unsigned short)
+                0x08001b00       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x08001b00                soft_spi_bus::transfer(unsigned char const*, unsigned char*, unsigned short)
  .text._ZNK14soft_uart_portILt256EE14is_initializedEv
-                0x08001b40        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001b40                soft_uart_port<(unsigned short)256>::is_initialized() const
+                0x08001b30        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001b30                soft_uart_port<(unsigned short)256>::is_initialized() const
  .text._ZN14soft_uart_portILt256EE6bufferEv
-                0x08001b48        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001b48                soft_uart_port<(unsigned short)256>::buffer()
+                0x08001b38        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001b38                soft_uart_port<(unsigned short)256>::buffer()
  .text._ZNK14soft_uart_portILt256EE6periphEv
-                0x08001b50        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001b50                soft_uart_port<(unsigned short)256>::periph() const
+                0x08001b40        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001b40                soft_uart_port<(unsigned short)256>::periph() const
  .text._ZNK14soft_uart_portILt256EE15rx_buf_capacityEv
-                0x08001b54        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001b54                soft_uart_port<(unsigned short)256>::rx_buf_capacity() const
+                0x08001b44        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001b44                soft_uart_port<(unsigned short)256>::rx_buf_capacity() const
  .text._ZN14soft_uart_portILt256EE4initEv
-                0x08001b5c       0x84 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001b5c                soft_uart_port<(unsigned short)256>::init()
+                0x08001b4c       0x84 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001b4c                soft_uart_port<(unsigned short)256>::init()
  .text._ZN14soft_uart_portILt256EED2Ev
-                0x08001be0       0x4c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001be0                soft_uart_port<(unsigned short)256>::~soft_uart_port()
-                0x08001be0                soft_uart_port<(unsigned short)256>::~soft_uart_port()
+                0x08001bd0       0x4c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001bd0                soft_uart_port<(unsigned short)256>::~soft_uart_port()
+                0x08001bd0                soft_uart_port<(unsigned short)256>::~soft_uart_port()
  .text._ZN14soft_uart_portILt256EE6deinitEv
-                0x08001c2c       0x2c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001c2c                soft_uart_port<(unsigned short)256>::deinit()
+                0x08001c1c       0x2c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001c1c                soft_uart_port<(unsigned short)256>::deinit()
  .text._ZN14soft_uart_portILt256EED0Ev
-                0x08001c58       0x54 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001c58                soft_uart_port<(unsigned short)256>::~soft_uart_port()
+                0x08001c48       0x54 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001c48                soft_uart_port<(unsigned short)256>::~soft_uart_port()
  .text._ZN14soft_uart_portILt256EEC2ERK14SoftUartConfig
-                0x08001cac       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001cac                soft_uart_port<(unsigned short)256>::soft_uart_port(SoftUartConfig const&)
-                0x08001cac                soft_uart_port<(unsigned short)256>::soft_uart_port(SoftUartConfig const&)
+                0x08001c9c       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001c9c                soft_uart_port<(unsigned short)256>::soft_uart_port(SoftUartConfig const&)
+                0x08001c9c                soft_uart_port<(unsigned short)256>::soft_uart_port(SoftUartConfig const&)
  .text._ZN14soft_uart_portILt256EE4putcEh
-                0x08001cf4       0x8c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001cf4                soft_uart_port<(unsigned short)256>::putc(unsigned char)
+                0x08001ce4       0x8c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001ce4                soft_uart_port<(unsigned short)256>::putc(unsigned char)
  .text._ZN14soft_uart_portILt256EE9send_dataEPKht
-                0x08001d80       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001d80                soft_uart_port<(unsigned short)256>::send_data(unsigned char const*, unsigned short)
+                0x08001d70       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001d70                soft_uart_port<(unsigned short)256>::send_data(unsigned char const*, unsigned short)
  .text._ZN14soft_uart_portILt256EE12send_data_itEPKht
-                0x08001db0       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x08001db0                soft_uart_port<(unsigned short)256>::send_data_it(unsigned char const*, unsigned short)
+                0x08001da0       0x48 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08001da0                soft_uart_port<(unsigned short)256>::send_data_it(unsigned char const*, unsigned short)
  .text._ZN12_GLOBAL__N_1L19_usart_clock_enableE12usart_enum_t
-                0x08001df8       0x8c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001de8       0x8c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
  .text._ZNK10usart_portILt256EE14is_initializedEv
-                0x08001e84        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001e84                usart_port<(unsigned short)256>::is_initialized() const
+                0x08001e74        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001e74                usart_port<(unsigned short)256>::is_initialized() const
  .text._ZN10usart_portILt256EE9send_dataEPKht
-                0x08001e8c       0x80 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001e8c                usart_port<(unsigned short)256>::send_data(unsigned char const*, unsigned short)
+                0x08001e7c       0x80 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001e7c                usart_port<(unsigned short)256>::send_data(unsigned char const*, unsigned short)
  .text._ZN10usart_portILt256EE6bufferEv
-                0x08001f0c        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001f0c                usart_port<(unsigned short)256>::buffer()
+                0x08001efc        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001efc                usart_port<(unsigned short)256>::buffer()
  .text._ZNK10usart_portILt256EE6periphEv
-                0x08001f14       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001f14                usart_port<(unsigned short)256>::periph() const
+                0x08001f04       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001f04                usart_port<(unsigned short)256>::periph() const
  .text._ZNK10usart_portILt256EE15rx_buf_capacityEv
-                0x08001f2c        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001f2c                usart_port<(unsigned short)256>::rx_buf_capacity() const
+                0x08001f1c        0x8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001f1c                usart_port<(unsigned short)256>::rx_buf_capacity() const
  .text._ZN10usart_portILt256EE4initEv
-                0x08001f34       0xf8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08001f34                usart_port<(unsigned short)256>::init()
+                0x08001f24       0xf8 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08001f24                usart_port<(unsigned short)256>::init()
  .text._ZN10usart_portILt256EE6deinitEv
-                0x0800202c       0xe4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x0800202c                usart_port<(unsigned short)256>::deinit()
+                0x0800201c       0xe4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x0800201c                usart_port<(unsigned short)256>::deinit()
  .text._ZN10usart_portILt256EED2Ev
-                0x08002110       0x28 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08002110                usart_port<(unsigned short)256>::~usart_port()
-                0x08002110                usart_port<(unsigned short)256>::~usart_port()
+                0x08002100       0x28 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08002100                usart_port<(unsigned short)256>::~usart_port()
+                0x08002100                usart_port<(unsigned short)256>::~usart_port()
  .text._ZN10usart_portILt256EE12send_data_itEPKht
-                0x08002138       0x7c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08002138                usart_port<(unsigned short)256>::send_data_it(unsigned char const*, unsigned short)
+                0x08002128       0x7c CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08002128                usart_port<(unsigned short)256>::send_data_it(unsigned char const*, unsigned short)
  .text._ZL9_uart_isrP15usart_port_base.part.0
-                0x080021b4      0x108 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x080021a4      0x108 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
  .text._ZN10usart_portILt256EED0Ev
-                0x080022bc       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x080022bc                usart_port<(unsigned short)256>::~usart_port()
+                0x080022ac       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x080022ac                usart_port<(unsigned short)256>::~usart_port()
  .text.USART1_IRQHandler
-                0x080022ec       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x080022ec                USART1_IRQHandler
+                0x080022dc       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x080022dc                USART1_IRQHandler
  .text.USART2_IRQHandler
-                0x08002330       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08002330                USART2_IRQHandler
+                0x08002320       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08002320                USART2_IRQHandler
  .text.USART3_IRQHandler
-                0x08002374       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08002374                USART3_IRQHandler
+                0x08002364       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08002364                USART3_IRQHandler
  .text.UART4_IRQHandler
-                0x080023b8       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x080023b8                UART4_IRQHandler
+                0x080023a8       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x080023a8                UART4_IRQHandler
  .text.UART5_IRQHandler
-                0x080023fc       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x080023fc                UART5_IRQHandler
+                0x080023ec       0x44 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x080023ec                UART5_IRQHandler
  .text._ZN10usart_portILt256EEC2ERK15UsartPortConfig
-                0x08002440       0x58 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x08002440                usart_port<(unsigned short)256>::usart_port(UsartPortConfig const&)
-                0x08002440                usart_port<(unsigned short)256>::usart_port(UsartPortConfig const&)
+                0x08002430       0x58 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08002430                usart_port<(unsigned short)256>::usart_port(UsartPortConfig const&)
+                0x08002430                usart_port<(unsigned short)256>::usart_port(UsartPortConfig const&)
  .text._ZN10flash_port4initEmm
-                0x08002498       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
-                0x08002498                flash_port::init(unsigned long, unsigned long)
+                0x08002488       0x18 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x08002488                flash_port::init(unsigned long, unsigned long)
  .text._ZN10flash_port5eraseEm
-                0x080024b0       0x98 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
-                0x080024b0                flash_port::erase(unsigned long)
+                0x080024a0       0x98 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x080024a0                flash_port::erase(unsigned long)
+ .text._ZN10flash_port10write_wordEmm
+                0x08002538       0x80 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x08002538                flash_port::write_word(unsigned long, unsigned long)
  .text._ZN10flash_port10write_byteEmh
-                0x08002548       0x74 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
-                0x08002548                flash_port::write_byte(unsigned long, unsigned char)
+                0x080025b8       0x74 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x080025b8                flash_port::write_byte(unsigned long, unsigned char)
  .text._ZN10flash_port9read_byteEm
-                0x080025bc        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
-                0x080025bc                flash_port::read_byte(unsigned long)
+                0x0800262c        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_flash.cpp.obj
+                0x0800262c                flash_port::read_byte(unsigned long)
  .text.startup._GLOBAL__sub_I_debug_uart
-                0x080025c0       0xc8 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+                0x08002630       0xc8 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
  .text.DebugPort_Init
-                0x08002688        0xc CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
-                0x08002688                DebugPort_Init
+                0x080026f8        0xc CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+                0x080026f8                DebugPort_Init
  .text.soft_485_init
-                0x08002694       0x20 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
-                0x08002694                soft_485_init
+                0x08002704       0x20 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+                0x08002704                soft_485_init
  .text.soft_485_send
-                0x080026b4       0x38 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
-                0x080026b4                soft_485_send
+                0x08002724       0x38 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+                0x08002724                soft_485_send
  .text._ZN6w25qxxC2ER7spi_bus
-                0x080026ec        0x8 CMakeFiles/stm32_cmake_M3.dir/device/src/device_w25qxx.cpp.obj
-                0x080026ec                w25qxx::w25qxx(spi_bus&)
-                0x080026ec                w25qxx::w25qxx(spi_bus&)
+                0x0800275c        0x8 CMakeFiles/stm32_cmake_M3.dir/device/src/device_w25qxx.cpp.obj
+                0x0800275c                w25qxx::w25qxx(spi_bus&)
+                0x0800275c                w25qxx::w25qxx(spi_bus&)
  .text.__aeabi_atexit
-                0x080026f4        0xa /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
-                0x080026f4                __aeabi_atexit
- .text._ZdlPvj  0x080026fe        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(del_ops.o)
-                0x080026fe                operator delete(void*, unsigned int)
- .text._ZdlPv   0x08002702        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(del_op.o)
-                0x08002702                operator delete(void*)
- *fill*         0x08002706        0x2 
+                0x08002764        0xa /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(atexit_arm.o)
+                0x08002764                __aeabi_atexit
+ .text._ZdlPvj  0x0800276e        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(del_ops.o)
+                0x0800276e                operator delete(void*, unsigned int)
+ .text._ZdlPv   0x08002772        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libstdc++_nano.a(del_op.o)
+                0x08002772                operator delete(void*)
+ *fill*         0x08002776        0x2 
  .text.__assert_func
-                0x08002708       0x3c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-assert.o)
-                0x08002708                __assert_func
- .text.malloc   0x08002744       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-malloc.o)
-                0x08002744                malloc
- .text.free     0x08002754       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-malloc.o)
-                0x08002754                free
+                0x08002778       0x3c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-assert.o)
+                0x08002778                __assert_func
+ .text.malloc   0x080027b4       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-malloc.o)
+                0x080027b4                malloc
+ .text.free     0x080027c4       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-malloc.o)
+                0x080027c4                free
  .text.sbrk_aligned
-                0x08002764       0x44 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mallocr.o)
+                0x080027d4       0x44 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mallocr.o)
  .text._malloc_r
-                0x080027a8       0xf8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mallocr.o)
-                0x080027a8                _malloc_r
+                0x08002818       0xf8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mallocr.o)
+                0x08002818                _malloc_r
  .text.__malloc_lock
-                0x080028a0        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mlock.o)
-                0x080028a0                __malloc_lock
+                0x08002910        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mlock.o)
+                0x08002910                __malloc_lock
  .text.__malloc_unlock
-                0x080028ac        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mlock.o)
-                0x080028ac                __malloc_unlock
+                0x0800291c        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-mlock.o)
+                0x0800291c                __malloc_unlock
  .text.__cxa_atexit
-                0x080028b8       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-cxa_atexit.o)
-                0x080028b8                __cxa_atexit
- .text.std      0x080028d4       0x6c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x08002928       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-cxa_atexit.o)
+                0x08002928                __cxa_atexit
+ .text.std      0x08002944       0x6c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
  .text.stdio_exit_handler
-                0x08002940       0x18 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x080029b0       0x18 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
  .text.cleanup_stdio
-                0x08002958       0x40 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x080029c8       0x40 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
  .text.global_stdio_init.part.0
-                0x08002998       0x40 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x08002a08       0x40 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
  .text.__sfp_lock_acquire
-                0x080029d8        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
-                0x080029d8                __sfp_lock_acquire
+                0x08002a48        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x08002a48                __sfp_lock_acquire
  .text.__sfp_lock_release
-                0x080029e4        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
-                0x080029e4                __sfp_lock_release
- .text.__sinit  0x080029f0       0x30 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
-                0x080029f0                __sinit
- .text.fprintf  0x08002a20       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fprintf.o)
-                0x08002a20                fprintf
-                0x08002a20                fiprintf
+                0x08002a54        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x08002a54                __sfp_lock_release
+ .text.__sinit  0x08002a60       0x30 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-findfp.o)
+                0x08002a60                __sinit
+ .text.fprintf  0x08002a90       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fprintf.o)
+                0x08002a90                fprintf
+                0x08002a90                fiprintf
  .text._fwalk_sglue
-                0x08002a44       0x3a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fwalk.o)
-                0x08002a44                _fwalk_sglue
- .text.__sread  0x08002a7e       0x22 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
-                0x08002a7e                __sread
+                0x08002ab4       0x3a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fwalk.o)
+                0x08002ab4                _fwalk_sglue
+ .text.__sread  0x08002aee       0x22 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
+                0x08002aee                __sread
  .text.__swrite
-                0x08002aa0       0x38 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
-                0x08002aa0                __swrite
- .text.__sseek  0x08002ad8       0x26 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
-                0x08002ad8                __sseek
+                0x08002b10       0x38 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
+                0x08002b10                __swrite
+ .text.__sseek  0x08002b48       0x26 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
+                0x08002b48                __sseek
  .text.__sclose
-                0x08002afe        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
-                0x08002afe                __sclose
- .text.memset   0x08002b06       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memset.o)
-                0x08002b06                memset
- *fill*         0x08002b16        0x2 
+                0x08002b6e        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-stdio.o)
+                0x08002b6e                __sclose
+ .text.memset   0x08002b76       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memset.o)
+                0x08002b76                memset
+ *fill*         0x08002b86        0x2 
  .text._close_r
-                0x08002b18       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-closer.o)
-                0x08002b18                _close_r
+                0x08002b88       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-closer.o)
+                0x08002b88                _close_r
  .text._lseek_r
-                0x08002b38       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lseekr.o)
-                0x08002b38                _lseek_r
- .text._read_r  0x08002b5c       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-readr.o)
-                0x08002b5c                _read_r
- .text._sbrk_r  0x08002b80       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-sbrkr.o)
-                0x08002b80                _sbrk_r
+                0x08002ba8       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lseekr.o)
+                0x08002ba8                _lseek_r
+ .text._read_r  0x08002bcc       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-readr.o)
+                0x08002bcc                _read_r
+ .text._sbrk_r  0x08002bf0       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-sbrkr.o)
+                0x08002bf0                _sbrk_r
  .text._write_r
-                0x08002ba0       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-writer.o)
-                0x08002ba0                _write_r
- .text.__errno  0x08002bc4        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-errno.o)
-                0x08002bc4                __errno
+                0x08002c10       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-writer.o)
+                0x08002c10                _write_r
+ .text.__errno  0x08002c34        0xc /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-errno.o)
+                0x08002c34                __errno
  .text.__libc_init_array
-                0x08002bd0       0x48 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-init.o)
-                0x08002bd0                __libc_init_array
+                0x08002c40       0x48 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-init.o)
+                0x08002c40                __libc_init_array
  .text.__retarget_lock_init_recursive
-                0x08002c18        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
-                0x08002c18                __retarget_lock_init_recursive
+                0x08002c88        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
+                0x08002c88                __retarget_lock_init_recursive
  .text.__retarget_lock_acquire_recursive
-                0x08002c1a        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
-                0x08002c1a                __retarget_lock_acquire_recursive
+                0x08002c8a        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
+                0x08002c8a                __retarget_lock_acquire_recursive
  .text.__retarget_lock_release_recursive
-                0x08002c1c        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
-                0x08002c1c                __retarget_lock_release_recursive
- .text.memcpy   0x08002c1e       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memcpy-stub.o)
-                0x08002c1e                memcpy
- *fill*         0x08002c3a        0x2 
+                0x08002c8c        0x2 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-lock.o)
+                0x08002c8c                __retarget_lock_release_recursive
+ .text.memcpy   0x08002c8e       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memcpy-stub.o)
+                0x08002c8e                memcpy
+ *fill*         0x08002caa        0x2 
  .text.__register_exitproc
-                0x08002c3c       0xb8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-__atexit.o)
-                0x08002c3c                __register_exitproc
- .text.abort    0x08002cf4        0xe /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-abort.o)
-                0x08002cf4                abort
- *fill*         0x08002d02        0x2 
- .text._free_r  0x08002d04       0x94 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-freer.o)
-                0x08002d04                _free_r
+                0x08002cac       0xb8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-__atexit.o)
+                0x08002cac                __register_exitproc
+ .text.abort    0x08002d64        0xe /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-abort.o)
+                0x08002d64                abort
+ *fill*         0x08002d72        0x2 
+ .text._free_r  0x08002d74       0x94 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-freer.o)
+                0x08002d74                _free_r
  .text.__sfputc_r
-                0x08002d98       0x2a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
+                0x08002e08       0x2a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
  .text.__sfputs_r
-                0x08002dc2       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
-                0x08002dc2                __sfputs_r
- *fill*         0x08002de6        0x2 
+                0x08002e32       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
+                0x08002e32                __sfputs_r
+ *fill*         0x08002e56        0x2 
  .text._vfprintf_r
-                0x08002de8      0x21c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
-                0x08002de8                _vfiprintf_r
-                0x08002de8                _vfprintf_r
+                0x08002e58      0x21c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
+                0x08002e58                _vfiprintf_r
+                0x08002e58                _vfprintf_r
  .text._printf_common
-                0x08003004       0xea /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
-                0x08003004                _printf_common
- *fill*         0x080030ee        0x2 
+                0x08003074       0xea /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08003074                _printf_common
+ *fill*         0x0800315e        0x2 
  .text._printf_i
-                0x080030f0      0x254 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
-                0x080030f0                _printf_i
+                0x08003160      0x254 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
+                0x08003160                _printf_i
  .text.__sflush_r
-                0x08003344       0xf8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fflush.o)
-                0x08003344                __sflush_r
+                0x080033b4       0xf8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fflush.o)
+                0x080033b4                __sflush_r
  .text._fflush_r
-                0x0800343c       0x50 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fflush.o)
-                0x0800343c                _fflush_r
+                0x080034ac       0x50 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fflush.o)
+                0x080034ac                _fflush_r
  .text.__swbuf_r
-                0x0800348c       0x7a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-wbuf.o)
-                0x0800348c                __swbuf_r
- *fill*         0x08003506        0x2 
+                0x080034fc       0x7a /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-wbuf.o)
+                0x080034fc                __swbuf_r
+ *fill*         0x08003576        0x2 
  .text.__swsetup_r
-                0x08003508       0xa8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-wsetup.o)
-                0x08003508                __swsetup_r
+                0x08003578       0xa8 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-wsetup.o)
+                0x08003578                __swsetup_r
  .text._raise_r
-                0x080035b0       0x50 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signal.o)
-                0x080035b0                _raise_r
- .text.raise    0x08003600       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signal.o)
-                0x08003600                raise
- .text._kill_r  0x08003610       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signalr.o)
-                0x08003610                _kill_r
+                0x08003620       0x50 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signal.o)
+                0x08003620                _raise_r
+ .text.raise    0x08003670       0x10 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signal.o)
+                0x08003670                raise
+ .text._kill_r  0x08003680       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signalr.o)
+                0x08003680                _kill_r
  .text._getpid_r
-                0x08003634        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signalr.o)
-                0x08003634                _getpid_r
- .text.memchr   0x08003638       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memchr-stub.o)
-                0x08003638                memchr
+                0x080036a4        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-signalr.o)
+                0x080036a4                _getpid_r
+ .text.memchr   0x080036a8       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-memchr-stub.o)
+                0x080036a8                memchr
  .text.__swhatbuf_r
-                0x08003654       0x48 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-makebuf.o)
-                0x08003654                __swhatbuf_r
+                0x080036c4       0x48 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-makebuf.o)
+                0x080036c4                __swhatbuf_r
  .text.__smakebuf_r
-                0x0800369c       0x72 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-makebuf.o)
-                0x0800369c                __smakebuf_r
- *fill*         0x0800370e        0x2 
+                0x0800370c       0x72 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-makebuf.o)
+                0x0800370c                __smakebuf_r
+ *fill*         0x0800377e        0x2 
  .text._fstat_r
-                0x08003710       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fstatr.o)
-                0x08003710                _fstat_r
+                0x08003780       0x24 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-fstatr.o)
+                0x08003780                _fstat_r
  .text._isatty_r
-                0x08003734       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-isattyr.o)
-                0x08003734                _isatty_r
+                0x080037a4       0x20 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-isattyr.o)
+                0x080037a4                _isatty_r
  *(.glue_7)
- .glue_7        0x08003754        0x0 linker stubs
+ .glue_7        0x080037c4        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x08003754        0x0 linker stubs
+ .glue_7t       0x080037c4        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x08003754        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
+ .eh_frame      0x080037c4        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
  *(.init)
- .init          0x08003754        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crti.o
-                0x08003754                _init
- .init          0x08003758        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
+ .init          0x080037c4        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crti.o
+                0x080037c4                _init
+ .init          0x080037c8        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
  *(.fini)
- .fini          0x08003760        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crti.o
-                0x08003760                _fini
- .fini          0x08003764        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
-                0x0800376c                        . = ALIGN (0x4)
-                0x0800376c                        _etext = .
+ .fini          0x080037d0        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crti.o
+                0x080037d0                _fini
+ .fini          0x080037d4        0x8 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
+                0x080037dc                        . = ALIGN (0x4)
+                0x080037dc                        _etext = .
 
-.vfp11_veneer   0x0800376c        0x0
- .vfp11_veneer  0x0800376c        0x0 linker stubs
+.vfp11_veneer   0x080037dc        0x0
+ .vfp11_veneer  0x080037dc        0x0 linker stubs
 
-.v4_bx          0x0800376c        0x0
- .v4_bx         0x0800376c        0x0 linker stubs
+.v4_bx          0x080037dc        0x0
+ .v4_bx         0x080037dc        0x0 linker stubs
 
-.iplt           0x0800376c        0x0
- .iplt          0x0800376c        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
+.iplt           0x080037dc        0x0
+ .iplt          0x080037dc        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
 
-.rodata         0x0800376c      0x214
-                0x0800376c                        . = ALIGN (0x4)
+.rodata         0x080037dc      0x210
+                0x080037dc                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x0800376c       0x24 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
- .rodata        0x08003790       0x4c CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+ .rodata        0x080037dc       0x24 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
+ .rodata        0x08003800       0x4c CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
  *(.rodata*)
  .rodata.APBPrescTable
-                0x080037dc        0x8 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f1xx.c.obj
-                0x080037dc                APBPrescTable
+                0x0800384c        0x8 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f1xx.c.obj
+                0x0800384c                APBPrescTable
  .rodata.AHBPrescTable
-                0x080037e4       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f1xx.c.obj
-                0x080037e4                AHBPrescTable
+                0x08003854       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Core/Src/system_stm32f1xx.c.obj
+                0x08003854                AHBPrescTable
  .rodata.aPredivFactorTable.0
-                0x080037f4        0x2 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj
- *fill*         0x080037f6        0x2 
+                0x08003864        0x2 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj
+ *fill*         0x08003866        0x2 
  .rodata.aPLLMULFactorTable.1
-                0x080037f8       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj
- .rodata.function_init.str1.4
-                0x08003808       0x75 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
-                                  0x4 (size before relaxing)
+                0x08003868       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c.obj
  .rodata._ZN7io_ctrl13_enable_clockEv.str1.4
-                0x0800387d        0x0 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
-                                 0x71 (size before relaxing)
- *fill*         0x0800387d        0x3 
+                0x08003878       0x71 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_io_ctrl.cpp.obj
+ *fill*         0x080038e9        0x3 
  .rodata._ZTV12soft_spi_bus
-                0x08003880       0x28 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
-                0x08003880                vtable for soft_spi_bus
+                0x080038ec       0x28 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_spi.cpp.obj
+                0x080038ec                vtable for soft_spi_bus
  .rodata._ZTV14soft_uart_portILt256EE
-                0x080038a8       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
-                0x080038a8                vtable for soft_uart_port<(unsigned short)256>
+                0x08003914       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_soft_uart.cpp.obj
+                0x08003914                vtable for soft_uart_port<(unsigned short)256>
  .rodata.CSWTCH.22
-                0x080038d8        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08003944        0x4 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
  .rodata._ZTV10usart_portILt256EE
-                0x080038dc       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
-                0x080038dc                vtable for usart_port<(unsigned short)256>
+                0x08003948       0x30 CMakeFiles/stm32_cmake_M3.dir/interface/src/inter_usart.cpp.obj
+                0x08003948                vtable for usart_port<(unsigned short)256>
  .rodata.__assert_func.str1.1
-                0x0800390c       0x6f /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-assert.o)
+                0x08003978       0x6f /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-assert.o)
                                  0x3d (size before relaxing)
- *fill*         0x0800397b        0x1 
+ *fill*         0x080039e7        0x1 
  .rodata.__on_exit_args
-                0x0800397c        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-on_exit_args.o)
-                0x0800397c                __on_exit_args
+                0x080039e8        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-on_exit_args.o)
+                0x080039e8                __on_exit_args
  .rodata._vfprintf_r.str1.1
-                0x08003980        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
+                0x080039ec        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf.o)
                                  0x11 (size before relaxing)
  .rodata._printf_i.str1.1
-                0x08003980        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
+                0x080039ec        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libg_nano.a(libc_a-nano-vfprintf_i.o)
                                  0x22 (size before relaxing)
-                0x08003980                        . = ALIGN (0x4)
+                0x080039ec                        . = ALIGN (0x4)
 
-.ARM.extab      0x08003980        0x0
-                0x08003980                        . = ALIGN (0x4)
+.ARM.extab      0x080039ec        0x0
+                0x080039ec                        . = ALIGN (0x4)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x08003980                        . = ALIGN (0x4)
+                0x080039ec                        . = ALIGN (0x4)
 
-.ARM            0x08003980        0x0
-                0x08003980                        . = ALIGN (0x4)
-                0x08003980                        __exidx_start = .
+.ARM            0x080039ec        0x0
+                0x080039ec                        . = ALIGN (0x4)
+                0x080039ec                        __exidx_start = .
  *(.ARM.exidx*)
-                0x08003980                        __exidx_end = .
-                0x08003980                        . = ALIGN (0x4)
+                0x080039ec                        __exidx_end = .
+                0x080039ec                        . = ALIGN (0x4)
 
-.preinit_array  0x08003980        0x0
-                0x08003980                        . = ALIGN (0x4)
-                0x08003980                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x080039ec        0x0
+                0x080039ec                        . = ALIGN (0x4)
+                0x080039ec                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08003980                        PROVIDE (__preinit_array_end = .)
-                0x08003980                        . = ALIGN (0x4)
+                0x080039ec                        PROVIDE (__preinit_array_end = .)
+                0x080039ec                        . = ALIGN (0x4)
 
-.init_array     0x08003980        0xc
-                0x08003980                        . = ALIGN (0x4)
-                0x08003980                        PROVIDE (__init_array_start = .)
+.init_array     0x080039ec        0xc
+                0x080039ec                        . = ALIGN (0x4)
+                0x080039ec                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08003980        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
- .init_array    0x08003984        0x4 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
- .init_array    0x08003988        0x4 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
-                0x0800398c                        PROVIDE (__init_array_end = .)
-                0x0800398c                        . = ALIGN (0x4)
+ .init_array    0x080039ec        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
+ .init_array    0x080039f0        0x4 CMakeFiles/stm32_cmake_M3.dir/function/src/function.cpp.obj
+ .init_array    0x080039f4        0x4 CMakeFiles/stm32_cmake_M3.dir/device/src/device_serial.cpp.obj
+                0x080039f8                        PROVIDE (__init_array_end = .)
+                0x080039f8                        . = ALIGN (0x4)
 
-.fini_array     0x0800398c        0x4
-                0x0800398c                        . = ALIGN (0x4)
-                0x0800398c                        PROVIDE (__fini_array_start = .)
+.fini_array     0x080039f8        0x4
+                0x080039f8                        . = ALIGN (0x4)
+                0x080039f8                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x0800398c        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
-                0x08003990                        PROVIDE (__fini_array_end = .)
-                0x08003990                        . = ALIGN (0x4)
-                0x08003990                        _sidata = LOADADDR (.data)
+ .fini_array    0x080039f8        0x4 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
+                0x080039fc                        PROVIDE (__fini_array_end = .)
+                0x080039fc                        . = ALIGN (0x4)
+                0x080039fc                        _sidata = LOADADDR (.data)
 
-.rel.dyn        0x08003990        0x0
- .rel.iplt      0x08003990        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
+.rel.dyn        0x080039fc        0x0
+ .rel.iplt      0x080039fc        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
 
-.data           0x20000000       0x70 load address 0x08003990
+.data           0x20000000       0x70 load address 0x080039fc
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -2234,16 +2233,16 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
                 0x20000070                        . = ALIGN (0x4)
 
 .tm_clone_table
-                0x20000070        0x0 load address 0x08003a00
+                0x20000070        0x0 load address 0x08003a6c
  .tm_clone_table
                 0x20000070        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
  .tm_clone_table
                 0x20000070        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtend.o
 
-.igot.plt       0x20000070        0x0 load address 0x08003a00
+.igot.plt       0x20000070        0x0 load address 0x08003a6c
  .igot.plt      0x20000070        0x0 /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
 
-.tdata          0x20000070        0x0 load address 0x08003a00
+.tdata          0x20000070        0x0 load address 0x08003a6c
  *(.tdata .tdata.* .gnu.linkonce.td.*)
                 0x20000070                        . = ALIGN (0x4)
                 0x20000070                        _edata = .
@@ -2260,7 +2259,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
                 [!provide]                        PROVIDE (__data_source_end = __tdata_source_end)
                 [!provide]                        PROVIDE (__data_source_size = (__data_source_end - __data_source))
 
-.tbss           0x20000070        0x0 load address 0x08003a00
+.tbss           0x20000070        0x0 load address 0x08003a6c
                 0x20000070                        _sbss = .
                 0x20000070                        __bss_start__ = _sbss
  *(.tbss .tbss.*)
@@ -2277,7 +2276,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
                 [!provide]                        PROVIDE (__arm32_tls_tcb_offset = MAX (0x8, __tls_align))
                 [!provide]                        PROVIDE (__arm64_tls_tcb_offset = MAX (0x10, __tls_align))
 
-.bss            0x20000070      0xa08 load address 0x08003a00
+.bss            0x20000070      0xa08 load address 0x08003a6c
  *(.bss)
  .bss           0x20000070       0x1c /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtbegin.o
  *(.bss*)
@@ -2358,7 +2357,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15.2.0/thumb/v7-m/nofp/crtn.o
                 [!provide]                        PROVIDE (__bss_size = (__bss_end - __bss_start))
 
 ._user_heap_stack
-                0x20000a78      0x600 load address 0x08003a00
+                0x20000a78      0x600 load address 0x08003a6c
                 0x20000a78                        . = ALIGN (0x8)
                 [!provide]                        PROVIDE (end = .)
                 0x20000a78                        PROVIDE (_end = .)

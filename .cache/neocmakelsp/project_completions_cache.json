@@ -1,44 +1,6 @@
 {
-  "date": "2026-09-03T07:47:16.586947617Z",
+  "date": "2026-09-03T15:21:26.00452548Z",
   "data": {
-    "/home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt": [
-      {
-        "label": "MX_Defines_Syms",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated symbols (macros)"
-      },
-      {
-        "label": "MX_Include_Dirs",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated include paths"
-      },
-      {
-        "label": "MX_Application_Src",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated application sources"
-      },
-      {
-        "label": "STM32_Drivers_Src",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32 HAL/LL Drivers"
-      },
-      {
-        "label": "MX_LINK_DIRS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nLink directories setup"
-      },
-      {
-        "label": "MX_LINK_LIBS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nProject static libraries"
-      }
-    ],
     "/home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt": [
       {
         "label": "CMAKE_CXX_STANDARD_REQUIRED",
@@ -93,188 +55,6 @@
         "kind": 12,
         "detail": "Value",
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/CMakeLists.txt\n\nSetup compiler settings"
-      }
-    ],
-    "/home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake": [
-      {
-        "label": "CMAKE_SYSTEM_NAME",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_SYSTEM_PROCESSOR",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_C_COMPILER_ID",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_CXX_COMPILER_ID",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "TOOLCHAIN_PREFIX",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake\n\narm-none-eabi- must be part of path environment"
-      },
-      {
-        "label": "CMAKE_C_COMPILER",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_ASM_COMPILER",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_CXX_COMPILER",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_LINKER",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_OBJCOPY",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_SIZE",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXECUTABLE_SUFFIX_ASM",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXECUTABLE_SUFFIX_C",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXECUTABLE_SUFFIX_CXX",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_TRY_COMPILE_TARGET_TYPE",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "TARGET_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake\n\nMCU specific flags"
-      },
-      {
-        "label": "CMAKE_C_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_ASM_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_C_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_C_FLAGS_DEBUG",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_C_FLAGS_RELEASE",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_CXX_FLAGS_DEBUG",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_CXX_FLAGS_RELEASE",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_CXX_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXE_LINKER_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXE_LINKER_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXE_LINKER_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXE_LINKER_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "CMAKE_EXE_LINKER_FLAGS",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
-      },
-      {
-        "label": "TOOLCHAIN_LINK_LIBRARIES",
-        "kind": 12,
-        "detail": "Value",
-        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
       }
     ],
     "/home/loopy/Documents/project/stm32_cmake_M3/cmake/starm-clang.cmake": [
@@ -493,6 +273,226 @@
         "kind": 12,
         "detail": "Value",
         "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/starm-clang.cmake"
+      }
+    ],
+    "/home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake": [
+      {
+        "label": "CMAKE_SYSTEM_NAME",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_SYSTEM_PROCESSOR",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_C_COMPILER_ID",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_CXX_COMPILER_ID",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "TOOLCHAIN_PREFIX",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake\n\narm-none-eabi- must be part of path environment"
+      },
+      {
+        "label": "CMAKE_C_COMPILER",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_ASM_COMPILER",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_CXX_COMPILER",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_LINKER",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_OBJCOPY",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_SIZE",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXECUTABLE_SUFFIX_ASM",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXECUTABLE_SUFFIX_C",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXECUTABLE_SUFFIX_CXX",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_TRY_COMPILE_TARGET_TYPE",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "TARGET_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake\n\nMCU specific flags"
+      },
+      {
+        "label": "CMAKE_C_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_ASM_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_C_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_C_FLAGS_DEBUG",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_C_FLAGS_RELEASE",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_CXX_FLAGS_DEBUG",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_CXX_FLAGS_RELEASE",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_CXX_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXE_LINKER_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXE_LINKER_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXE_LINKER_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXE_LINKER_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "CMAKE_EXE_LINKER_FLAGS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      },
+      {
+        "label": "TOOLCHAIN_LINK_LIBRARIES",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/gcc-arm-none-eabi.cmake"
+      }
+    ],
+    "/home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt": [
+      {
+        "label": "MX_Defines_Syms",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated symbols (macros)"
+      },
+      {
+        "label": "MX_Include_Dirs",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated include paths"
+      },
+      {
+        "label": "MX_Application_Src",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32CubeMX generated application sources"
+      },
+      {
+        "label": "STM32_Drivers_Src",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nSTM32 HAL/LL Drivers"
+      },
+      {
+        "label": "MX_LINK_DIRS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nLink directories setup"
+      },
+      {
+        "label": "MX_LINK_LIBS",
+        "kind": 12,
+        "detail": "Value",
+        "documentation": "defined variable\nfrom: /home/loopy/Documents/project/stm32_cmake_M3/cmake/stm32cubemx/CMakeLists.txt\n\nProject static libraries"
       }
     ]
   }

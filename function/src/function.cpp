@@ -19,6 +19,7 @@ soft_spi_bus spi_bus_64({GPIOA, pin5, GPIOA, pin7, GPIOA, pin6, GPIOA, pin4, act
 
 w25qxx flash64(spi_bus_64);
 flash_port mimo_flash;
+flash_port deep_flash;
 
 void function_init(void)
 {
@@ -30,21 +31,23 @@ void function_init(void)
     flash_selftest_main();
 #else
 
+    uint8_t abs[] = {0x99, 0x89, 0x77, 0x43, 0x18};
     uint8_t momo_id = 0;
     spi_bus_64.init();
     DebugPort_Init();
     soft_485_init();
     // flash64.init();
-    mimo_flash.init(0x0801FC00, 0x400);
-    mimo_flash.write_byte(0x0801FC00, 0x67);
-    momo_id = mimo_flash.read_byte(0x0801FC00);
+    mimo_flash.init(0x0807F800, 0x800);
+    deep_flash.init(0x0807E800, 0x800);
+
+    mimo_flash.write_byte(0x0807F800, 0x67);
+    deep_flash.erase(0x0807E800);
+    // deep_flash.write_bytes(0x0807E800, abs, sizeof(abs));
+    deep_flash.write_word(0x0807E804, 0x8823);
 
     soft_485_send(&momo_id, 1);
-    mimo_flash.erase(0x0801FC01);
     delay_ms(10);
-    momo_id = mimo_flash.read_byte(0x0801FC00);
-    soft_485_send(&momo_id, 1);
-    debug_uart.send_data((uint8_t *)"aa\n", strlen("aa\n"));
+    momo_id = mimo_flash.read_byte(0x0807F800);
 #endif
 }
 
