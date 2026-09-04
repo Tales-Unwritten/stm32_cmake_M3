@@ -55,8 +55,9 @@
  *     · 不要对一个已擦除周期内写过的地址重复 write_byte/write_bytes。
  *   write_bytes() 内部会合并相邻字节、每个半字只编程一次。
  */
-class flash_port {
-public:
+class flash_port
+{
+  public:
     // ── 生命周期 ──────────────────────────────────────────
     /** @brief 初始化 Flash 控制器并设置安全区域
      *  @param safe_start  允许操作的起始地址
@@ -81,23 +82,34 @@ public:
     /** @brief 批量写 byte 数组（自动合并相邻字节为半字、每半字只编程一次） */
     static bool write_bytes(uint32_t addr, const uint8_t *data, uint16_t len);
     // ── 读取（直接内存访问，无需解锁） ────────────────────
-    static uint8_t  read_byte(uint32_t addr);
+    static uint8_t read_byte(uint32_t addr);
     static uint32_t read_word(uint32_t addr);
-    static void     read_bytes(uint32_t addr, uint8_t *buf, uint16_t len);
+    static void read_bytes(uint32_t addr, uint8_t *buf, uint16_t len);
     // ── 查询 ──────────────────────────────────────────────
-    static uint32_t safe_start() { return _safe_start; }
-    static uint32_t safe_end()   { return _safe_end; }
-    static uint32_t safe_size()  { return _safe_end - _safe_start; }
-private:
+    static uint32_t safe_start()
+    {
+        return _safe_start;
+    }
+    static uint32_t safe_end()
+    {
+        return _safe_end;
+    }
+    static uint32_t safe_size()
+    {
+        return _safe_end - _safe_start;
+    }
+
+  private:
     static bool _in_range(uint32_t addr, uint32_t len);
     static bool _write_halfword(uint32_t addr, uint16_t data);
     static uint32_t _safe_start;
     static uint32_t _safe_end;
-public:
+
+  public:
     /* ── 调试诊断（最近一次失败原因；无失败时均为 0） ── */
-    static uint32_t diag_fail_addr;   /* 失败地址 */
-    static uint8_t  diag_fail_stage;  /* 0=无 1=地址超出芯片Flash范围 2=超出安全区
-                                          3=擦除命令失败(HAL) 4=擦除等待超时
-                                          5=编程失败(HAL) 6=write_word地址未对齐(需4B) */
+    static uint32_t diag_fail_addr; /* 失败地址 */
+    static uint8_t diag_fail_stage; /* 0=无 1=地址超出芯片Flash范围 2=超出安全区
+                                        3=擦除命令失败(HAL) 4=擦除等待超时
+                                        5=编程失败(HAL) 6=write_word地址未对齐(需4B) */
 };
 #endif

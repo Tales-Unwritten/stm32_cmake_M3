@@ -1,55 +1,86 @@
 #pragma once
 // ============================================================
-// @platform GD32F4xx
-//   移植到新 MCU 时替换：
-//     - [PORT] #include "gd32f4xx.h" → 目标 SDK 头文件
-//     - [PORT] enum class adc_id（按目标芯片调整枚举项）
+// @platform STM32F103xx（STM32F10xxx / Cortex-M3，基于 STM32F1xx HAL 库）
+//   实现采用 HAL ADC 官方 API（配置/校准/轮询/Start_DMA 中断链），
+//   DMA 通道资源由 inter_dma 的 dma_channel 以 M2（HAL 托管）模式提供。
 // ============================================================
 
 #ifdef __cplusplus
 
-#include <cstdint>
-#include "inter_io_ctrl.hpp"
 #include "inter_dma.hpp"
-#include "gd32f4xx.h"
+#include "inter_io_ctrl.hpp"   // 引入 stm32f1xx_hal.h（必须先完整展开，hal_adc.h 依赖其 typedef）
+#include "stm32f1xx_hal_adc.h" // ADC_CHANNEL_x / ADC_SAMPLETIME_x 参数宏与 HAL ADC 句柄（hal.h 展开后安全）
+#include <cstdint>
 
-enum class adc_id : uint8_t { adc0, adc1, adc2 };
+// 外设编号：adc1 ↔ ADC1，adc2 ↔ ADC2，adc3 ↔ ADC3
+enum class adc_id : uint8_t
+{
+    adc1,
+    adc2,
+    adc3
+};
+
+enum adc_rank_t : uint32_t
+{
+    rank1 = ADC_REGULAR_RANK_1,
+    rank2 = ADC_REGULAR_RANK_2,
+    rank3 = ADC_REGULAR_RANK_3,
+    rank4 = ADC_REGULAR_RANK_4,
+    rank5 = ADC_REGULAR_RANK_5,
+    rank6 = ADC_REGULAR_RANK_6,
+    rank7 = ADC_REGULAR_RANK_7,
+    rank8 = ADC_REGULAR_RANK_8,
+    rank9 = ADC_REGULAR_RANK_9,
+    rank10 = ADC_REGULAR_RANK_10,
+    rank11 = ADC_REGULAR_RANK_11,
+    rank12 = ADC_REGULAR_RANK_12,
+    rank13 = ADC_REGULAR_RANK_13,
+    rank14 = ADC_REGULAR_RANK_14,
+    rank15 = ADC_REGULAR_RANK_15,
+    rank16 = ADC_REGULAR_RANK_16,
+};
 
 // ============================================================
 //  通道配置
 // ============================================================
 
-struct AdcChannelConfig {
-    GPIO_TypeDef* port   = nullptr;  ///< GPIO 端口（nullptr = 不配置引脚，仅选通道号）
-    pin_enum_t    pin    = pin_none;  ///< 引脚掩码
-    uint32_t channel     = 0;   ///< ADC 通道号: ADC_CHANNEL_0 ~ ADC_CHANNEL_18
-    uint32_t sample_time = ADC_SAMPLETIME_144;  ///< 本通道采样时间: ADC_SAMPLETIME_3 ~ _480
+struct AdcChannelConfig
+{
+    GPIO_TypeDef *port = nullptr; ///< GPIO 端口（nullptr = 不配置引脚，仅选通道号）
+    pin_enum_t pin = pin_none;    ///< 引脚掩码
+    uint32_t channel = 0;         ///< ADC 通道号: ADC_CHANNEL_0 ~ ADC_CHANNEL_17（F1 无 CH18；
+                                  ///< CH16/CH17 = 温度/内部参考，仅 ADC1 可达，需 enable_temp_vref）
+    adc_rank_t rank_t = rank1;
+    uint32_t sample_time = ADC_SAMPLETIME_55CYCLES_5; ///< 采样时间: ADC_SAMPLETIME_1CYCLE_5 ~ _239CYCLES_5
 };
 
 // ============================================================
 //  端口配置
 // ============================================================
 
-struct AdcPortConfig {
-    adc_id            periph           = adc_id::adc0;   ///< 外设 ID
-    uint32_t          resolution       = ADC_RESOLUTION_12B;   ///< ADC_RESOLUTION_12B / 10B / 8B / 6B
-    uint32_t          data_alignment   = ADC_DATAALIGN_RIGHT;  ///< ADC_DATAALIGN_RIGHT / LEFT
-    uint32_t          trigger_mode     = EXTERNAL_TRIGGER_DISABLE; ///< 触发模式（固定软件触发）
-    uint32_t          vref_mv          = 3300;   ///< 参考电压 mV
-    uint32_t          clock_div        = ADC_ADCCK_PCLK2_DIV4; ///< ADC 时钟分频（3 个 ADC 共享，默认 120M/4=30MHz）
-    bool              scan_enable      = false;  ///< 硬件扫描模式（多通道一次序列转换，对齐参考实现）
-    bool              enable_temp_vref = false;  ///< 使能温度传感器(CH16)/内部参考(CH17)通道
-    AdcChannelConfig  channels[8]      = {};     ///< 通道列表（port=0 结束）
-    uint8_t           channel_count    = 0;      ///< 1~8
+struct AdcPortConfig
+{
+    adc_id periph = adc_id::adc1; ///< 外设 ID（adc1/2/3 ↔ ADC1/2/3）
+    uint32_t resolution = 0;      ///< [F1 忽略] 固定 12bit，无分辨率配置位（字段仅为兼容 GD32 版 API 形状保留）
+    uint32_t data_alignment = 0;  ///< [F1 忽略] 固定右对齐（字段仅为兼容 GD32 版 API 形状保留）
+    uint32_t trigger_mode = 0;    ///< [F1 忽略] 固定软件触发（字段仅为兼容保留）
+    uint32_t vref_mv = 3300;      ///< 参考电压 mV
+    uint32_t clock_div = RCC_CFGR_ADCPRE_DIV6; ///< ADC 时钟分频（3 个 ADC 共享，PCLK2=72MHz 时 DIV6=12MHz ≤14MHz 上限）
+    bool scan_enable = false;                  ///< 硬件扫描模式（多通道序列；DMA 模式强制多通道序列）
+    bool enable_temp_vref = false;             ///< 使能温度传感器(CH16)/内部参考(CH17)（仅 adc1/ADC1 有效）
+    AdcChannelConfig channels[8] = {};         ///< 通道列表（port=0 结束）
+    uint8_t channel_count = 0;                 ///< 1~8
 
-    // ── DMA 模式（对齐官方例程 ADC0_routine_sequence_with_DMA：连续转换 + DMA 循环搬运） ──
-    // 注意: GD32F450/470 的 ADC DMA 请求映射与 GD32F407 不同（官方例程 + 师傅 DMA_BSP 双重印证）:
-    //    ADC0 -> DMA1_CH0 SUBPERI0, ADC1 -> DMA1_CH2 SUBPERI1, ADC2 -> DMA1_CH1 SUBPERI2
-    bool              use_dma          = false;  ///< 启用 DMA 连续采集（需配合 scan_enable）
-    dma_id            dma_controller   = dma_id::dma1;  ///< DMA 控制器（ADC 全在 DMA1）
-    uint8_t           dma_channel      = 0;      ///< DMA 通道号（ADC0->CH0, ADC1->CH2, ADC2->CH1）
-    uint32_t          dma_priority     = DMA_PRIORITY_MEDIUM;  ///< DMA 优先级
-    uint32_t          dma_sub_periph   = DMA_SUBPERI0;        ///< 外设请求源（ADC0->SUBPERI0）
+    // ── DMA 模式（HAL_ADC_Start_DMA 官方中断链 + inter_dma M2 托管） ──
+    //   F1 高密度固定映射（请求源由通道号硬件决定，无 SUBPERI 选择）：
+    //     ADC1 -> DMA1_Channel1（dma1 + ch0）  中断向量 DMA1_Channel1_IRQn
+    //     ADC3 -> DMA2_Channel5（dma2 + ch4）  中断向量 DMA2_Channel4_5_IRQn
+    //     ADC2 无 DMA 能力（use_dma 时 dma_start() 返回 false）
+    //   其余 dma_controller/dma_channel 组合无内置 ISR，dma_start() 返回 false
+    bool use_dma = false;                        ///< 启用 DMA 连续采集
+    dma_id dma_controller = dma_id::dma1;        ///< DMA 控制器（ADC1→dma1，ADC3→dma2）
+    uint8_t dma_channel = 0;                     ///< DMA 通道号 0-based（ADC1→0，ADC3→4）
+    uint32_t dma_priority = DMA_PRIORITY_MEDIUM; ///< DMA 优先级
 };
 
 // ============================================================
@@ -57,23 +88,29 @@ struct AdcPortConfig {
 // ============================================================
 
 /**
- * @brief ADC 端口（阻塞单通道 + 多通道扫描）
+ * @brief ADC 端口（HAL API：阻塞单通道轮询 + DMA 连续采集）
  *
- * 测试用：PA0 接 3.3V, PB3 接 3.3V
+ * 验证用法：PC1 接 3.3V（ADC1_IN11）
  *
- *   static adc_port adc({
- *       .periph = adc_id::adc0,
- *       .channels = {{{GPIOA, pin0, ADC_CHANNEL_0, ADC_SAMPLETIME_144},
- *                     {GPIOB, pin3, ADC_CHANNEL_3, ADC_SAMPLETIME_144}}},
- *       .channel_count = 2,
- *       .scan_enable = true,          // 硬件扫描模式
+ *   static adc_port adc(AdcPortConfig{
+ *       .periph = adc_id::adc1,          // ADC1
+ *       .channels = {{GPIOC, pin1, ADC_CHANNEL_11, ADC_SAMPLETIME_55CYCLES_5}},
+ *       .channel_count = 1,
+ *       .use_dma = true,                 // ADC1 → DMA1_Channel1
+ *       .dma_controller = dma_id::dma1,
+ *       .dma_channel = 0,
  *   });
- *   adc.init();                       // 内部已自动校准（校准必须先于使能）
- *   uint32_t mv = adc.read_mv(0);     // 读 PA0
- *   uint32_t t[2]; adc.scan_mv(t);    // 一次序列转换取全部
+ *   adc.init();                          // 内部已自动校准
+ *   uint32_t mv = adc.read_mv(0);        // 轮询单通道（软件触发）
+ *   adc.dma_start(buf, 64);              // DMA 循环采集（HAL_ADC_Start_DMA）
+ *   while (!adc.dma_done());
+ *   adc.dma_stop();
+ *
+ * @note 轮询与 DMA 路径互斥：DMA 运行中调用 read_raw/scan_raw 前必须先 dma_stop()
  */
-class adc_port {
-public:
+class adc_port
+{
+  public:
     explicit adc_port(const AdcPortConfig &cfg);
     ~adc_port();
 
@@ -83,31 +120,36 @@ public:
     // ── 生命周期 ──────────────────────────────────────────
     void init();
     void deinit();
-    [[nodiscard]] bool is_initialized() const noexcept { return _initialized; }
+    [[nodiscard]] bool is_initialized() const noexcept
+    {
+        return _initialized;
+    }
 
     // ── 自校准 ────────────────────────────────────────────
 
     /**
      * @brief ADC 校准（init() 已自动执行，一般无需手动调用）
-     * @note  GD32 要求校准必须在 ADC 使能之前；若已使能本方法会
-     *        临时关闭→校准→重新使能（安全但多一次开关）
+     * @note  HAL_ADCEx_Calibration_Start 内部管理上电/断电；
+     *        若 DMA 采集运行中调用需先 dma_stop()
      */
     void calibrate();
 
-    // ── 单通道阻塞转换 ────────────────────────────────────
+    // ── 单通道阻塞转换（软件触发轮询） ────────────────────
 
     uint16_t read_raw(uint8_t ch_index);
     uint32_t read_mv(uint8_t ch_index);
 
-    // ── 扫描（所有通道顺序转换） ──────────────────────────
+    // ── 扫描（所有通道依次转换） ──────────────────────────
+    // 注：F1 无 GD32 的 EOCM 位，硬件扫描无法逐通道轮询，此路径
+    //     退化为逐通道软件转换（结果一致）；硬件序列扫描请用 DMA 模式
 
     void scan_raw(uint16_t *results);
     void scan_mv(uint32_t *results);
 
-    // ── DMA 连续采集（对齐参考实现，CPU 零参与） ───────────
+    // ── DMA 连续采集（HAL 官方链：连续转换 + DMA 循环搬运） ─
 
     /**
-     * @brief 启动 DMA 循环采集（ADC 连续转换 + DMA 循环搬运）
+     * @brief 启动 DMA 循环采集
      * @param buf    结果缓冲区（uint16_t，长度 ≥ channel_count × frames）
      * @param frames 采集帧数（每帧 = 所有通道转换一轮）
      * @return true = 启动成功
@@ -115,33 +157,45 @@ public:
      */
     bool dma_start(uint16_t *buf, uint16_t frames);
 
-    /** @brief DMA 首轮采集是否完成 */
+    /** @brief DMA 首轮采集是否完成（DMA 中断链置 HAL REG_EOC 状态位） */
     [[nodiscard]] bool dma_done() const;
 
-    /** @brief 停止 DMA 采集 */
+    /** @brief 停止 DMA 采集并复位为轮询模式 */
     void dma_stop();
 
     // ── 查询 ──────────────────────────────────────────────
-    [[nodiscard]] adc_id periph() const noexcept { return _cfg.periph; }
-    [[nodiscard]] uint8_t channel_count() const noexcept { return _cfg.channel_count; }
+    [[nodiscard]] adc_id periph() const noexcept
+    {
+        return _cfg.periph;
+    }
+    [[nodiscard]] uint8_t channel_count() const noexcept
+    {
+        return _cfg.channel_count;
+    }
 
-private:
+  private:
     void _enable_clock();
-    void _config_channel(uint8_t index);
-    uint16_t _do_convert();
+    void _set_mode(uint8_t n, bool cont); // 序列长度/连续模式切换（经 HAL_ADC_Init 重写 L/CONT/SCAN）
+    uint16_t _convert_one(uint8_t index); // 单通道轮询转换（Start→Poll→读→Stop）
 
     AdcPortConfig _cfg;
 
-    // PWM 模式同款 aligned storage + placement new
-    struct { alignas(io_ctrl) uint8_t data[sizeof(io_ctrl)]; } _ch_storage[8];
+    // GPIO aligned storage + placement new
+    struct
+    {
+        alignas(io_ctrl) uint8_t data[sizeof(io_ctrl)];
+    } _ch_storage[8];
     io_ctrl *_ch_pins[8];
 
-    // DMA 通道（use_dma 时有效）
-    struct { alignas(dma_channel) uint8_t data[sizeof(dma_channel)]; } _dma_storage;
+    // DMA 通道（use_dma 时有效；M2 托管模式借给 HAL_ADC_Start_DMA）
+    struct
+    {
+        alignas(dma_channel) uint8_t data[sizeof(dma_channel)];
+    } _dma_storage;
     dma_channel *_dma;
 
-    bool     _initialized;
-    uint32_t _periph;
+    bool _initialized;
+    ADC_HandleTypeDef _hadc{}; // F1 HAL ADC 句柄（Instance 在 init() 绑定）
 };
 
 #endif

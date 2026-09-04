@@ -10,8 +10,12 @@ usart_port<256> rs232_uart({usart2, GPIOD, pin5, GPIOD, pin6, afio_enum_t::NONE,
 /* USART3, PA2(TX), PA3(RX), 115200, 256B RX (引脚请按实际板子核对) */
 // usart_port<256> rs485_uart({usart3, GPIOA, pin2, GPIOA, pin3, afio_enum_t::NONE, 115200});
 
+//由于板子的485芯片引脚连接错误所以这里用软件模拟串口来创建485串口驱动
+//如果你想要在你自己的板端使用记得更新端口引脚
 soft_uart_port<256> soft_rs485({GPIOA, pin3, GPIOA, pin2, 115200});
 
+
+//这里记得创建一个自己的使能引脚并初始化k
 io_ctrl en_485(GPIOB, pin12);
 
 void DebugPort_Init(void)

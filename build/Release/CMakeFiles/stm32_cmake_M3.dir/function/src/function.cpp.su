@@ -1,3 +1,5 @@
-/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:54:6:void function_loop()	0	static
-/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:59:1:cpp)	48	static
-/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:24:6:void function_init()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:164:1:cpp)	48	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:34:13:)	176	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:44:13:void adc_multi_verify()	240	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:127:6:void function_init()	16	static
+/home/loopy/Documents/project/stm32_cmake_M3/function/src/function.cpp:158:6:void function_loop()	8	static
