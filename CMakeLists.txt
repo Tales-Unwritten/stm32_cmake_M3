@@ -82,6 +82,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_flash.cpp
     interface/src/inter_dma.cpp
     interface/src/inter_adc.cpp
+    interface/src/inter_exti.cpp
 
     # interface/src/inter_timer.cpp
 
