@@ -86,19 +86,20 @@ stm32_cmake_M3/
 | `inter_usart` | 硬件串口（HAL UART，模板化收发缓冲） |
 | `inter_i2c_bus` / `inter_i2c_dev` | 软件 I2C 总线 / 器件访问封装 |
 | `inter_flash` | 片上 Flash 安全读写（F1 HAL；工程以 `FLASH_CAPACITY_KB=512` 适配 VET6） |
+| `inter_dma` | DMA 通道抽象（F1 HAL；M1 自管理搬运/传输 + M2 HAL 托管，12 通道强符号 ISR 路由 + 通道号→IRQn 映射） |
+| `inter_adc` | ADC 端口（F1 HAL；阻塞轮询 + DMA 连续采集，ADC1→DMA1_Ch1 / ADC3→DMA2_Ch5，DMA 资源来自 `inter_dma`） |
+| `inter_exti` | 外部中断（F1 HAL EXTI；线 0~18，ISR 分发表 + 线互斥，线级 IMR 门控） |
+| `inter_nvic` | NVIC 统一门面（使能/优先级/分组/Pending/Active/SysTick/PRIMASK），收敛全工程 `HAL_NVIC_*` 调用；基类 `nvic_bus` + STM32F1 实现 `nvic_ctrl` |
 
 ### 🟡 开发中（未移植完 / 未接入构建）
 
-> 以下模块源码**源自 GD32F450/470 工程**，仍引用 `gd32*` 头文件/寄存器（如 `inter_adc.hpp` 直接 `#include "gd32f4xx.h"`），
-> **尚未改造为 STM32F1 HAL**，也不在 `CMakeLists.txt` 的编译列表中——`inter_adc`/`inter_timer` 留有注释行占位，其余未列出。
+> 以下模块源码**源自 GD32F450/470 工程**，仍引用 `gd32*` 头文件/寄存器（如 `inter_timer.hpp` / `inter_can.hpp` 直接 `#include "gd32f4xx.h"`），
+> **尚未改造为 STM32F1 HAL**，也不在 `CMakeLists.txt` 的编译列表中——仅 `inter_timer` 留有注释行占位，其余未列出。
 
 | 模块 | 现状 |
 |---|---|
-| `inter_adc` | GD32F4 三 ADC + DMA 通道映射代码，待按 F1 重写 |
 | `inter_can` | GD32 bxCAN 代码 + F1 引脚注释混杂，待移植 |
 | `inter_dac` | GD32 DAC 配置，F1 无 DAC，待改造/裁剪 |
-| `inter_dma` | GD32 DMA 通道/请求源映射，待移植 |
-| `inter_exti` | GD32 EXTI 参考实现（含 LVD/以太网等系统线），待精简移植 |
 | `inter_i2c_hw` | GD32 硬件 I2C，待移植（当前软 I2C 已够用） |
 | `inter_i2c_test_simple.hpp` | I2C 自测代码（header 单测），未整理 |
 | `inter_rtc` | GD32 RTC，待移植 |

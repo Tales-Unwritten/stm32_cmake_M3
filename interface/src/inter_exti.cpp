@@ -23,6 +23,8 @@
 
 #include "inter_exti.hpp"
 
+#include "inter_nvic.hpp"
+
 // ════════════════════════════════════════════════════════════
 //  全局端口映射表（EXTI 线 0~18）
 //  线 17（RTC 闹钟）由 inter_rtc 管理，槽位保留 nullptr
@@ -222,8 +224,8 @@ bool exti_port::init()
     HAL_EXTI_SetConfigLine(&_hexti, &cfg);
     HAL_EXTI_ClearPending(&_hexti, EXTI_TRIGGER_RISING_FALLING); // 清残留 pending
 
-    HAL_NVIC_SetPriority(_get_irq(), _cfg.preempt_priority, _cfg.sub_priority);
-    HAL_NVIC_EnableIRQ(_get_irq()); // 组 NVIC 一次性开启；线级启停用 enable()/disable()
+    nvic().set_priority(_get_irq(), _cfg.preempt_priority, _cfg.sub_priority);
+    nvic().enable(_get_irq()); // 组 NVIC 一次性开启；线级启停用 enable()/disable()
     _register_isr();
     _initialized = true;
     return true;

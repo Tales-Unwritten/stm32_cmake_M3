@@ -18,6 +18,10 @@
 #include "flash_selftest.hpp"
 #endif
 
+#ifdef ENABLE_DMA_SELFTEST
+#include "dma_selftest.hpp"
+#endif
+
 // ============================================================
 // [ADC 多通道实测代码，保留供查看；不需要时请删除本段 + function_init()
 //  中的 adc_multi_verify() 调用 + 上方 inter_adc.hpp/stdarg/stdio 三个头]
@@ -138,6 +142,9 @@ void function_init(void)
     uint8_t momo_id = 0;
     spi_bus_64.init();
     DebugPort_Init();
+#ifdef ENABLE_DMA_SELFTEST
+    dma_selftest_main(); // [DMA 内存搬运自测，仅 DMA_SELFTEST=ON 的构建存在]
+#endif
     adc_multi_verify(); // [ADC 多通道实测，保留；不需要时删除此行]
     soft_485_init();
     // flash64.init();

@@ -41,6 +41,13 @@ enable_language(C ASM CXX)
 #   3. 使用 preset Selftest 构建到 build/selftest
 option(FLASH_SELFTEST "Build with on-chip flash_port selftest harness" OFF)
 
+# ── DMA 内存搬运自测开关（默认 OFF，不影响正常固件） ─────────────
+# ON 时：
+#   1. 追加 function/src/dma_selftest.cpp（DMA M2M 搬运自测主体）
+#   2. 定义 ENABLE_DMA_SELFTEST，function_init() 会调用 dma_selftest_main()
+#   3. 使用 preset dma_selftest 构建到 build/dma_selftest
+option(DMA_SELFTEST "Build with DMA memcpy selftest harness" OFF)
+
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -83,6 +90,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_dma.cpp
     interface/src/inter_adc.cpp
     interface/src/inter_exti.cpp
+    interface/src/inter_nvic.cpp
 
     # interface/src/inter_timer.cpp
 
@@ -134,6 +142,16 @@ if(FLASH_SELFTEST)
     )
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         ENABLE_FLASH_SELFTEST=0
+    )
+endif()
+
+# DMA 自测固件：仅在 DMA_SELFTEST=ON 时追加源文件与编译宏
+if(DMA_SELFTEST)
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        function/src/dma_selftest.cpp
+    )
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        ENABLE_DMA_SELFTEST=1
     )
 endif()
 

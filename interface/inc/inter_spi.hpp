@@ -6,6 +6,7 @@
 
 #ifdef __cplusplus
 
+#include "inter_dma.hpp" // DMA 通道（可选：enable_dma() 后才占用）
 #include "inter_io_ctrl.hpp"
 #include "inter_spi_bus.hpp"
 #include <cstdint>
@@ -139,6 +140,34 @@ class spi_port : public spi_bus
     /** @brief 释放 CS（恢复到无效电平） */
     void cs_deselect() override;
 
+    // ── DMA 块传输（可选；需先 enable_dma()） ──────────────
+    //
+    //  F1 的 SPI DMA 请求映射（硬件固定）：
+    //    SPI1: RX=DMA1_Ch2 TX=DMA1_Ch3      SPI2: RX=DMA1_Ch4 TX=DMA1_Ch5
+    //    SPI3: F103 无此 SPI → enable_dma() 返回 false
+    //  硬件冲突提醒：SPI1 的 Ch2/Ch3 与 USART3 共用；SPI2 的 Ch4/Ch5 与 USART1/I2C2 共用。
+    //
+    //  典型用法（W25Qxx 读一整帧：命令+地址+数据一次搬完，CS 由调用方管）：
+    //    uint8_t tx[4 + N] = {0x03, addr>>16, addr>>8, addr, /* 后面全 0xFF */};
+    //    uint8_t rx[4 + N];
+    //    spi.cs_select();
+    //    spi.transfer_dma(tx, rx, sizeof(tx));  // 数据在 rx + 4
+    //    spi.cs_deselect();
+
+    /** @brief 开通本 SPI 的 DMA 收发通道（幂等）
+     *  @return true=可用；false=该 SPI 无 DMA 映射或通道号越界 */
+    bool enable_dma();
+
+    /** @brief DMA 是否已开通 */
+    [[nodiscard]] bool dma_enabled() const noexcept
+    {
+        return _dma_tx != nullptr && _dma_rx != nullptr;
+    }
+
+    /** @brief 全双工块传输（DMA，阻塞到 HAL 状态回 READY）
+     *  @return true=完成  false=未开 DMA/参数错/超时 */
+    bool transfer_dma(const uint8_t *tx, uint8_t *rx, uint16_t len, uint32_t timeout_ms = 200);
+
     // ── 查询 ──────────────────────────────────────────────
 
     [[nodiscard]] spi_id periph() const noexcept
@@ -153,6 +182,7 @@ class spi_port : public spi_bus
   private:
     void _enable_clock();
     void _disable_clock();
+    void _release_dma(); // 析构两个 DMA 通道并让出资源
 
     SpiPortConfig _cfg;
     io_ctrl _sck;
@@ -162,6 +192,15 @@ class spi_port : public spi_bus
     bool _has_cs;
     bool _initialized;
     SPI_HandleTypeDef _hspi{}; // STM32 HAL SPI 句柄
+
+    // ── DMA 资源（enable_dma() 后才有值；对齐存储 + placement new，零堆分配） ──
+    struct
+    {
+        alignas(dma_channel) uint8_t rx[sizeof(dma_channel)];
+        alignas(dma_channel) uint8_t tx[sizeof(dma_channel)];
+    } _dma_storage;
+    dma_channel *_dma_rx;
+    dma_channel *_dma_tx;
 };
 
 #endif /* __cplusplus */

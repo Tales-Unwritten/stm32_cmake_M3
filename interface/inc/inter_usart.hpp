@@ -6,6 +6,7 @@
 //   实现见 inter_usart.cpp。
 // ============================================================
 
+#include "inter_dma.hpp"     // DMA 通道（可选：enable_dma() 后才占用）
 #include "inter_io_ctrl.hpp" // 引入 stm32f1xx_hal.h 与 GPIO/pin/pull/afio 类型
 #include <cstdint>
 
@@ -160,6 +161,48 @@ public:
      *  @return true=已启动  false=参数错误或正在发送中 */
     bool send_data_it(const uint8_t *data, uint16_t len) override;
 
+    // ── DMA 收发（可选；需先 enable_dma()） ────────────────
+    //
+    //  F1 的 DMA 请求映射是硬件固定的，本类按串口编号自动选通道：
+    //    USART1: TX=DMA1_Ch4 RX=DMA1_Ch5    USART2: TX=DMA1_Ch7 RX=DMA1_Ch6
+    //    USART3: TX=DMA1_Ch2 RX=DMA1_Ch3    UART4 : TX=DMA2_Ch5 RX=DMA2_Ch3
+    //    UART5 : 无 DMA 映射，enable_dma() 返回 false
+    //  注意：这些通道与 SPI1/SPI2/I2C1/I2C2 存在硬件重叠（详见 inter_dma.hpp 注释），
+    //        两个外设同时要求同一通道时目前是“后 init 者覆盖”，需上层自行避免。
+
+    /** @brief 开通本串口的 DMA 收发通道（幂等）
+     *  @return true=可用；false=该串口无 DMA 映射或通道号越界 */
+    bool enable_dma();
+
+    /** @brief DMA 是否已开通 */
+    [[nodiscard]] bool dma_enabled() const noexcept
+    {
+        return _dma_tx != nullptr && _dma_rx != nullptr;
+    }
+
+    /** @brief DMA 发送（阻塞到最后一字节完全移出）
+     *  @return true=发完  false=未开 DMA/参数错/超时 */
+    bool send_data_dma(const uint8_t *data, uint16_t len);
+
+    /** @brief 启动 DMA 接收（循环模式，len 应等于 buf 容量）
+     *
+     *  启用后 RXNE/IDLE/校验/错误中断全部关闭（避免 ISR 读 DR 抢走 DMA 还没
+     *  取走的字节），帧判断改由 rx_dma_count()/rx_dma_idle() 轮询完成。
+     *  用 receive_dma_stop() 可恢复中断式接收。
+     */
+    bool receive_dma_start(uint8_t *buf, uint16_t len);
+
+    /** @brief 停止 DMA 接收并恢复中断式接收 */
+    void receive_dma_stop();
+
+    /** @brief DMA 接收模式下：本帧已收到但尚未取走的字节数（= len - CNDTR）
+     *  @note 循环模式下一旦绕圈会从 0 重新计，故缓冲区应 ≥ 一帧长度 */
+    [[nodiscard]] uint16_t rx_dma_count() const;
+
+    /** @brief DMA 接收模式下轮询 IDLE/错误标志；有事件则清标志并返回 true
+     *  @note 只在 RXNE=0 时读 DR 清标志，不会抢走 DMA 尚未取走的字节 */
+    bool rx_dma_idle();
+
     // ── 缓冲区访问 ────────────────────────────────────────
 
     /** @brief 获取收发缓冲区引用（轮询 buf.rx_flag 和 buf.tx_busy） */
@@ -203,6 +246,19 @@ private:
 
     // 内部发送缓冲区（零堆分配，防止用户指针生命周期悬空）
     uint8_t _tx_buf[TX_BUF_SIZE];
+
+    // ── DMA 资源（enable_dma() 后才有值；对齐存储 + placement new，零堆分配） ──
+    struct
+    {
+        alignas(dma_channel) uint8_t tx[sizeof(dma_channel)];
+        alignas(dma_channel) uint8_t rx[sizeof(dma_channel)];
+    } _dma_storage;
+    dma_channel *_dma_tx;
+    dma_channel *_dma_rx;
+
+    // DMA 接收现场（接收中有效）
+    uint8_t *_rx_dma_buf;
+    uint16_t _rx_dma_len;
 };
 
 #endif /* __cplusplus */

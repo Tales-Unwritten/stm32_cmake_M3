@@ -7,6 +7,35 @@
 
 #include "inter_spi.hpp"
 
+#include "inter_nvic.hpp"
+
+#include <new> // placement new（DMA 通道对象就地构造，零堆分配）
+
+// ── SPI → DMA 请求映射（F1 硬件固定，无软件选择寄存器） ──────
+// 通道号为 0-based（即 DMA1_Channel2 → 1）。
+namespace
+{
+struct spi_dma_req_t
+{
+    dma_id ctrl;
+    int8_t rx_ch; // -1 = 该 SPI 无 DMA 映射
+    int8_t tx_ch;
+};
+
+spi_dma_req_t _spi_dma_req(spi_id id)
+{
+    switch (id)
+    {
+    case spi_id::spi1:
+        return {dma_id::dma1, 1, 2}; // RX=DMA1_CH2  TX=DMA1_CH3
+    case spi_id::spi2:
+        return {dma_id::dma1, 3, 4}; // RX=DMA1_CH4  TX=DMA1_CH5
+    default:
+        return {dma_id::dma1, -1, -1}; // spi3：F103 无此 SPI
+    }
+}
+} // namespace
+
 // ============================================================
 //  构造 / 析构
 // ============================================================
@@ -15,7 +44,8 @@ spi_port::spi_port(const SpiPortConfig &cfg)
     : _cfg(cfg), _sck(cfg.sck_port, cfg.sck_pin), _mosi(cfg.mosi_port, cfg.mosi_pin),
       _miso(cfg.miso_port, cfg.miso_pin),
       _cs(cfg.cs_port ? cfg.cs_port : GPIOA, cfg.cs_pin != pin_none ? cfg.cs_pin : pin0),
-      _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none), _initialized(false)
+      _has_cs(cfg.cs_port != nullptr && cfg.cs_pin != pin_none), _initialized(false), _dma_rx(nullptr),
+      _dma_tx(nullptr)
 {
 }
 
@@ -139,6 +169,7 @@ void spi_port::deinit()
         return;
 
     HAL_SPI_DeInit(&_hspi);
+    _release_dma(); // 先停 SPI 再归还 DMA 通道
 
     _sck.deinit();
     _mosi.deinit();
@@ -227,4 +258,103 @@ void spi_port::cs_deselect()
         return;
 
     _cs.write(_cfg.cs_active_level == active_low ? Hig : Low); // 释放 = 输出无效电平
+}
+
+// ============================================================
+//  DMA 块传输（可选；通道由硬件请求映射决定，见 _spi_dma_req）
+// ============================================================
+
+void spi_port::_release_dma()
+{
+    if (_dma_rx != nullptr)
+    {
+        _dma_rx->~dma_channel();
+        _dma_rx = nullptr;
+    }
+    if (_dma_tx != nullptr)
+    {
+        _dma_tx->~dma_channel();
+        _dma_tx = nullptr;
+    }
+}
+
+bool spi_port::enable_dma()
+{
+    if (dma_enabled())
+        return true; // 幂等
+
+    const spi_dma_req_t req = _spi_dma_req(_cfg.periph);
+    if (req.rx_ch < 0)
+        return false; // 该 SPI 无 DMA 映射（spi3）
+
+    const IRQn_Type irq_rx = dma_channel::irq_of(req.ctrl, (uint8_t)req.rx_ch);
+    const IRQn_Type irq_tx = dma_channel::irq_of(req.ctrl, (uint8_t)req.tx_ch);
+    if ((irq_rx == dma_channel::IRQ_NONE) || (irq_tx == dma_channel::IRQ_NONE))
+        return false;
+
+    _dma_rx = new (_dma_storage.rx) dma_channel({req.ctrl, (uint8_t)req.rx_ch, DMA_PRIORITY_MEDIUM});
+    _dma_tx = new (_dma_storage.tx) dma_channel({req.ctrl, (uint8_t)req.tx_ch, DMA_PRIORITY_MEDIUM});
+    _dma_rx->init();
+    _dma_tx->init();
+    if (!_dma_rx->is_initialized() || !_dma_tx->is_initialized())
+    {
+        _release_dma();
+        return false;
+    }
+
+    // 先把两个通道配好并挂到 SPI 句柄上（HAL 的 TransmitReceive_DMA 要求 hdmarx/hdmatx 已就位）
+    _dma_rx->set_width(DMA_PDATAALIGN_BYTE);
+    _dma_rx->set_direction(DMA_PERIPH_TO_MEMORY); // 外设 → 内存
+    _dma_rx->set_increment(false, true);          // SPI->DR 地址固定，内存自增
+    _dma_rx->set_circular(false);
+    if (_dma_rx->hal_configure() != HAL_OK)
+    {
+        _release_dma();
+        return false;
+    }
+
+    _dma_tx->set_width(DMA_PDATAALIGN_BYTE);
+    _dma_tx->set_direction(DMA_MEMORY_TO_PERIPH); // 内存 → 外设
+    _dma_tx->set_increment(true, false);          // 内存自增，SPI->DR 固定
+    _dma_tx->set_circular(false);
+    if (_dma_tx->hal_configure() != HAL_OK)
+    {
+        _release_dma();
+        return false;
+    }
+
+    __HAL_LINKDMA(&_hspi, hdmarx, *_dma_rx->hal_handle());
+    __HAL_LINKDMA(&_hspi, hdmatx, *_dma_tx->hal_handle());
+
+    // 传输完成靠 DMA 中断驱动 HAL 回调 → 必须开 NVIC（ISR 由 inter_dma 统一路由）
+    nvic().set_priority(irq_rx, 6, 0);
+    nvic().enable(irq_rx);
+    nvic().set_priority(irq_tx, 6, 0);
+    nvic().enable(irq_tx);
+    return true;
+}
+
+bool spi_port::transfer_dma(const uint8_t *tx, uint8_t *rx, uint16_t len, uint32_t timeout_ms)
+{
+    if (!_initialized || !dma_enabled() || (tx == nullptr) || (rx == nullptr) || (len == 0U))
+        return false;
+
+    // 上次传输未收尾（超时被中断等）：复位到 READY
+    if (HAL_SPI_GetState(&_hspi) != HAL_SPI_STATE_READY)
+        (void)HAL_SPI_Abort(&_hspi);
+
+    if (HAL_SPI_TransmitReceive_DMA(&_hspi, const_cast<uint8_t *>(tx), rx, len) != HAL_OK)
+        return false;
+
+    // 完成由 SPI 的 DMA 回调（SPI_DMATransmitReceiveCplt）把状态置回 READY
+    const uint32_t t0 = HAL_GetTick();
+    while (HAL_SPI_GetState(&_hspi) != HAL_SPI_STATE_READY)
+    {
+        if ((uint32_t)(HAL_GetTick() - t0) > timeout_ms)
+        {
+            (void)HAL_SPI_Abort(&_hspi);
+            return false;
+        }
+    }
+    return true;
 }

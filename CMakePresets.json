@@ -31,6 +31,14 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "FLASH_SELFTEST": "ON"
             }
+        },
+        {
+            "name": "dma_selftest",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "DMA_SELFTEST": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -45,6 +53,10 @@
         {
             "name": "selftest",
             "configurePreset": "selftest"
+        },
+        {
+            "name": "dma_selftest",
+            "configurePreset": "dma_selftest"
         }
     ]
 }

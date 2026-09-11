@@ -18,7 +18,10 @@
 
 #include "inter_usart.hpp"
 
+#include "inter_nvic.hpp"
+
 #include <cstring> // memcpy
+#include <new>     // placement new（DMA 通道对象就地构造，零堆分配）
 
 // ════════════════════════════════════════════════════════════
 //  文件内私有：平台映射表 + 小工具
@@ -27,8 +30,35 @@
 namespace
 {
 
-constexpr uint8_t  USART_COUNT        = 5;     // usart1/usart2/usart3/uart4/uart5
-constexpr uint32_t UART_POLL_TIMEOUT  = 0xFFFF; // 阻塞发送单步轮询上限（见 _wait_flag）
+constexpr uint8_t USART_COUNT = 5;             // usart1/usart2/usart3/uart4/uart5
+constexpr uint32_t UART_POLL_TIMEOUT = 0xFFFF; // 阻塞发送单步轮询上限（见 _wait_flag）
+constexpr uint32_t UART_DMA_TIMEOUT = 100U;    // DMA 收发单步超时（ms）
+
+// ── USART → DMA 请求映射（F1 硬件固定，无软件选择寄存器） ────
+// 通道号为 0-based（即 DMA1_Channel1 → 0）。
+struct usart_dma_req_t
+{
+    dma_id ctrl;
+    int8_t tx_ch; // -1 = 该串口无 DMA 映射
+    int8_t rx_ch;
+};
+
+usart_dma_req_t _usart_dma_req(usart_enum_t id)
+{
+    switch (id)
+    {
+    case usart1:
+        return {dma_id::dma1, 3, 4}; // TX=DMA1_CH4  RX=DMA1_CH5
+    case usart2:
+        return {dma_id::dma1, 6, 5}; // TX=DMA1_CH7  RX=DMA1_CH6
+    case usart3:
+        return {dma_id::dma1, 1, 2}; // TX=DMA1_CH2  RX=DMA1_CH3
+    case uart4:
+        return {dma_id::dma2, 4, 2}; // TX=DMA2_CH5  RX=DMA2_CH3
+    default:
+        return {dma_id::dma1, -1, -1}; // uart5：无 DMA 映射
+    }
+}
 
 // 当前默认实例化为 usart_port<256>；如需其他 RX 缓冲区大小，
 // 请在文件底部增加对应显式实例化，并同步调整 g_port_map 类型。
@@ -41,16 +71,12 @@ usart_port_base *g_port_map[USART_COUNT] = {};
 struct usart_map_t
 {
     USART_TypeDef *periph;
-    IRQn_Type      irqn;
+    IRQn_Type irqn;
 };
 
 // 外设指针宏为整型→指针转换，不可用于 constexpr；命名空间级 const 静态初始化等价。
 const usart_map_t k_usart_map[USART_COUNT] = {
-    {USART1, USART1_IRQn},
-    {USART2, USART2_IRQn},
-    {USART3, USART3_IRQn},
-    {UART4,  UART4_IRQn},
-    {UART5,  UART5_IRQn},
+    {USART1, USART1_IRQn}, {USART2, USART2_IRQn}, {USART3, USART3_IRQn}, {UART4, UART4_IRQn}, {UART5, UART5_IRQn},
 };
 
 // 越界编号的回退项（保留旧 switch default 分支的语义）
@@ -76,12 +102,23 @@ void _usart_clock_enable(usart_enum_t id)
 {
     switch (id)
     {
-    case usart1: __HAL_RCC_USART1_CLK_ENABLE(); break;
-    case usart2: __HAL_RCC_USART2_CLK_ENABLE(); break;
-    case usart3: __HAL_RCC_USART3_CLK_ENABLE(); break;
-    case uart4:  __HAL_RCC_UART4_CLK_ENABLE();  break;
-    case uart5:  __HAL_RCC_UART5_CLK_ENABLE();  break;
-    default:     break; // 非法编号：不动时钟（与旧 default 一致）
+    case usart1:
+        __HAL_RCC_USART1_CLK_ENABLE();
+        break;
+    case usart2:
+        __HAL_RCC_USART2_CLK_ENABLE();
+        break;
+    case usart3:
+        __HAL_RCC_USART3_CLK_ENABLE();
+        break;
+    case uart4:
+        __HAL_RCC_UART4_CLK_ENABLE();
+        break;
+    case uart5:
+        __HAL_RCC_UART5_CLK_ENABLE();
+        break;
+    default:
+        break; // 非法编号：不动时钟（与旧 default 一致）
     }
 }
 
@@ -89,12 +126,23 @@ void _usart_clock_disable(usart_enum_t id)
 {
     switch (id)
     {
-    case usart1: __HAL_RCC_USART1_CLK_DISABLE(); break;
-    case usart2: __HAL_RCC_USART2_CLK_DISABLE(); break;
-    case usart3: __HAL_RCC_USART3_CLK_DISABLE(); break;
-    case uart4:  __HAL_RCC_UART4_CLK_DISABLE();  break;
-    case uart5:  __HAL_RCC_UART5_CLK_DISABLE();  break;
-    default:     break;
+    case usart1:
+        __HAL_RCC_USART1_CLK_DISABLE();
+        break;
+    case usart2:
+        __HAL_RCC_USART2_CLK_DISABLE();
+        break;
+    case usart3:
+        __HAL_RCC_USART3_CLK_DISABLE();
+        break;
+    case uart4:
+        __HAL_RCC_UART4_CLK_DISABLE();
+        break;
+    case uart5:
+        __HAL_RCC_UART5_CLK_DISABLE();
+        break;
+    default:
+        break;
     }
 }
 
@@ -150,7 +198,8 @@ USART_TypeDef *usart_periph_ptr(usart_enum_t id)
 
 template <uint16_t RX_BUF_SIZE>
 usart_port<RX_BUF_SIZE>::usart_port(const UsartPortConfig &cfg)
-    : _cfg(cfg), _tx(cfg.tx_port, cfg.tx_pin), _rx(cfg.rx_port, cfg.rx_pin), _initialized(false), _buf{}
+    : _cfg(cfg), _tx(cfg.tx_port, cfg.tx_pin), _rx(cfg.rx_port, cfg.rx_pin), _initialized(false), _buf{},
+      _dma_tx(nullptr), _dma_rx(nullptr), _rx_dma_buf(nullptr), _rx_dma_len(0)
 {
     _buf.rx_buf = _rx_buf; // 接收视图预先指向成员数组
 }
@@ -202,10 +251,11 @@ template <uint16_t RX_BUF_SIZE> void usart_port<RX_BUF_SIZE>::init()
     // ② 外设时钟
     _enable_clock();
 
-    // ③ GPIO：TX/RX 均为复用推挽输出 + 内部上拉，按 AFIO remap 选脚
+    // ③ GPIO：TX 为复用推挽输出；RX 必须为输入（F1 的接收脚配成 AF 输出会让 MCU
+    //    自己驱动该脚，收发全废）——上拉保证空闲时线路为高电平
     _tx.init(mode_af_pp, pullup, speed_high);
     _tx.set_af(_cfg.af);
-    _rx.init(mode_af_pp, pullup, speed_high);
+    _rx.init(mode_af_input, pullup, speed_high);
     _rx.set_af(_cfg.af);
 
     USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
@@ -226,8 +276,8 @@ template <uint16_t RX_BUF_SIZE> void usart_port<RX_BUF_SIZE>::init()
     usart->CR1 |= USART_CR1_RXNEIE | USART_CR1_IDLEIE | USART_CR1_PEIE;
 
     // ⑧ NVIC 与端口表注册
-    HAL_NVIC_SetPriority(_get_irq(), _cfg.preempt_priority, _cfg.sub_priority);
-    HAL_NVIC_EnableIRQ(_get_irq());
+    nvic().set_priority(_get_irq(), _cfg.preempt_priority, _cfg.sub_priority);
+    nvic().enable(_get_irq());
 
     _register_port();
     _initialized = true;
@@ -240,7 +290,7 @@ template <uint16_t RX_BUF_SIZE> void usart_port<RX_BUF_SIZE>::deinit()
 
     _unregister_port(); // 先摘表：此后 ISR 不再路由到本实例
 
-    HAL_NVIC_DisableIRQ(_get_irq());
+    nvic().disable(_get_irq());
 
     // 停用外设（CR2 保持不复位，init 时会连同复位）
     USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
@@ -259,6 +309,20 @@ template <uint16_t RX_BUF_SIZE> void usart_port<RX_BUF_SIZE>::deinit()
 
     _usart_clock_disable(_cfg.usart_periph);
     _initialized = false;
+
+    // 释放 DMA 通道（若开通过）：析构会 deinit 通道并让出 ISR 路由槽位
+    if (_dma_tx != nullptr)
+    {
+        _dma_tx->~dma_channel();
+        _dma_tx = nullptr;
+    }
+    if (_dma_rx != nullptr)
+    {
+        _dma_rx->~dma_channel();
+        _dma_rx = nullptr;
+    }
+    _rx_dma_buf = nullptr;
+    _rx_dma_len = 0;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -313,6 +377,143 @@ template <uint16_t RX_BUF_SIZE> bool usart_port<RX_BUF_SIZE>::send_data_it(const
     // TXE 中断逐字节搬运；TC 中断负责最后一字节移出后收尾（tx_busy=0）
     usart->CR1 |= USART_CR1_TXEIE;
     usart->CR1 |= USART_CR1_TCIE;
+    return true;
+}
+
+// ════════════════════════════════════════════════════════════
+//  DMA 收发（可选；通道由硬件请求映射决定，见 _usart_dma_req）
+// ════════════════════════════════════════════════════════════
+
+template <uint16_t RX_BUF_SIZE> bool usart_port<RX_BUF_SIZE>::enable_dma()
+{
+    if (dma_enabled())
+        return true; // 幂等
+
+    const usart_dma_req_t req = _usart_dma_req(_cfg.usart_periph);
+    if (req.tx_ch < 0)
+        return false; // 该串口无 DMA 映射（uart5）
+
+    _dma_tx = new (_dma_storage.tx) dma_channel({req.ctrl, (uint8_t)req.tx_ch, DMA_PRIORITY_MEDIUM});
+    _dma_rx = new (_dma_storage.rx) dma_channel({req.ctrl, (uint8_t)req.rx_ch, DMA_PRIORITY_MEDIUM});
+    _dma_tx->init();
+    _dma_rx->init();
+
+    if (!_dma_tx->is_initialized() || !_dma_rx->is_initialized())
+    {
+        _dma_tx->~dma_channel();
+        _dma_rx->~dma_channel();
+        _dma_tx = nullptr;
+        _dma_rx = nullptr;
+        return false;
+    }
+    return true;
+}
+
+template <uint16_t RX_BUF_SIZE> bool usart_port<RX_BUF_SIZE>::send_data_dma(const uint8_t *data, uint16_t len)
+{
+    if (!_initialized || !dma_enabled() || (data == nullptr) || (len == 0U))
+        return false;
+
+    USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
+
+    _dma_tx->set_width(DMA_PDATAALIGN_BYTE);
+    _dma_tx->set_direction(DMA_MEMORY_TO_PERIPH); // 内存 → 外设
+    _dma_tx->set_increment(true, false);          // 内存自增；USART->DR 地址固定
+    _dma_tx->set_circular(false);
+    if (_dma_tx->start(const_cast<uint8_t *>(data), (void *)&usart->DR, len) != HAL_OK)
+        return false;
+
+    usart->SR &= ~USART_SR_TC;    // 先清旧 TC：下面等的必须是本次的"最后一位移出"
+    usart->CR3 |= USART_CR3_DMAT; // 外设开始产生 DMA 请求
+
+    // ① 等 DMA 把 len 个字节全部写进 DR
+    const uint32_t t0 = HAL_GetTick();
+    while (!_dma_tx->done())
+    {
+        if ((uint32_t)(HAL_GetTick() - t0) > UART_DMA_TIMEOUT)
+        {
+            usart->CR3 &= ~USART_CR3_DMAT;
+            _dma_tx->stop();
+            return false;
+        }
+    }
+
+    // ② DMA 搬完 ≠ 发完：TC 置位才代表最后一字节真正移出
+    const uint32_t t1 = HAL_GetTick();
+    while ((usart->SR & USART_SR_TC) == 0U)
+    {
+        if ((uint32_t)(HAL_GetTick() - t1) > UART_DMA_TIMEOUT)
+            break;
+    }
+
+    usart->CR3 &= ~USART_CR3_DMAT; // 收尾：关请求，避免下次误触发
+    return true;
+}
+
+template <uint16_t RX_BUF_SIZE> bool usart_port<RX_BUF_SIZE>::receive_dma_start(uint8_t *buf, uint16_t len)
+{
+    if (!_initialized || !dma_enabled() || (buf == nullptr) || (len == 0U))
+        return false;
+
+    USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
+
+    _dma_rx->set_width(DMA_PDATAALIGN_BYTE);
+    _dma_rx->set_direction(DMA_PERIPH_TO_MEMORY); // 外设 → 内存
+    _dma_rx->set_increment(false, true);          // USART->DR 固定；内存自增
+    _dma_rx->set_circular(true);                  // 循环收：用 rx_dma_count() 取长度
+    if (_dma_rx->start((void *)&usart->DR, buf, len) != HAL_OK)
+        return false;
+
+    // 接收期间把中断让给 DMA：否则 ISR 读到 RXNE 会先读 DR，抢走 DMA 尚未取走的字节
+    usart->CR1 &= ~(USART_CR1_RXNEIE | USART_CR1_IDLEIE | USART_CR1_PEIE);
+    usart->CR3 &= ~USART_CR3_EIE;
+    usart->CR3 |= USART_CR3_DMAR;
+
+    _rx_dma_buf = buf;
+    _rx_dma_len = len;
+    return true;
+}
+
+template <uint16_t RX_BUF_SIZE> void usart_port<RX_BUF_SIZE>::receive_dma_stop()
+{
+    if (!_initialized || !dma_enabled())
+        return;
+
+    USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
+    usart->CR3 &= ~USART_CR3_DMAR;
+    _dma_rx->stop();
+    _rx_dma_buf = nullptr;
+    _rx_dma_len = 0;
+
+    // 恢复中断式接收（与 init() 的配置一致），并清掉挂起的接收事件
+    _clear_rx_event(usart);
+    usart->CR1 |= USART_CR1_RXNEIE | USART_CR1_IDLEIE | USART_CR1_PEIE;
+    usart->CR3 |= USART_CR3_EIE;
+}
+
+template <uint16_t RX_BUF_SIZE> uint16_t usart_port<RX_BUF_SIZE>::rx_dma_count() const
+{
+    if (!dma_enabled() || (_rx_dma_buf == nullptr) || (_rx_dma_len == 0U))
+        return 0U;
+    const uint32_t rem = _dma_rx->remaining();
+    return (uint16_t)((_rx_dma_len > rem) ? (_rx_dma_len - rem) : 0U);
+}
+
+template <uint16_t RX_BUF_SIZE> bool usart_port<RX_BUF_SIZE>::rx_dma_idle()
+{
+    if (!_initialized || !dma_enabled() || (_rx_dma_buf == nullptr))
+        return false;
+
+    USART_TypeDef *usart = usart_periph_ptr(_cfg.usart_periph);
+    const uint32_t sr = usart->SR;
+    const uint32_t events = USART_SR_IDLE | USART_SR_ORE | USART_SR_FE | USART_SR_NE | USART_SR_PE;
+    if ((sr & events) == 0U)
+        return false;
+
+    // IDLE/错误标志都靠"读 SR 后读 DR"清除；只在 RXNE=0 时才读 DR，
+    // 否则会把 DMA 还没取走的那一字节读掉
+    if ((sr & USART_SR_RXNE) == 0U)
+        (void)usart->DR;
     return true;
 }
 

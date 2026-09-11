@@ -19,6 +19,8 @@
 
 #include "inter_adc.hpp"
 
+#include "inter_nvic.hpp"
+
 #include <new>
 
 static ADC_TypeDef *_adc_ptr(adc_id id)
@@ -47,16 +49,7 @@ static uint32_t _adc_clk_bit(adc_id id)
     }
 }
 
-/** @brief 返回该 DMA 映射对应的中断号（仅内置 ISR 的两个组合有效） */
-static IRQn_Type _dma_irqn(dma_id ctrl, uint8_t channel)
-{
-    if (ctrl == dma_id::dma1 && channel == 0)
-        return DMA1_Channel1_IRQn;
-    if (ctrl == dma_id::dma2 && channel == 4)
-        return DMA2_Channel4_5_IRQn;
-    return (IRQn_Type)-1; // NVIC 无效值，调用方先经 _dma_map_ok() 过滤
-}
-
+/** @brief ADC 支持的 DMA 映射：ADC1→DMA1_Ch1、ADC3→DMA2_Ch5，其余组合无内置 ISR */
 static bool _dma_map_ok(dma_id ctrl, uint8_t channel)
 {
     return (ctrl == dma_id::dma1 && channel == 0) || (ctrl == dma_id::dma2 && channel == 4);
@@ -173,7 +166,8 @@ void adc_port::deinit()
         if (_cfg.use_dma && _dma)
         {
             (void)HAL_ADC_Stop_DMA(&_hadc); // 停 ADC + Abort DMA
-            HAL_NVIC_DisableIRQ(_dma_irqn(_cfg.dma_controller, _cfg.dma_channel));
+            if (_dma_map_ok(_cfg.dma_controller, _cfg.dma_channel))
+                nvic().disable(dma_channel::irq_of(_cfg.dma_controller, _cfg.dma_channel));
         }
         else
         {
@@ -318,13 +312,13 @@ bool adc_port::dma_start(uint16_t *buf, uint16_t frames)
     __HAL_LINKDMA(&_hadc, DMA_Handle, *_dma->hal_handle()); // 互链 hadc ↔ dma handle
 
     // 开启 DMA 中断（ISR 由 inter_dma 内置，路由回本通道）
-    const IRQn_Type irqn = _dma_irqn(_cfg.dma_controller, _cfg.dma_channel);
-    HAL_NVIC_EnableIRQ(irqn);
+    const IRQn_Type irqn = dma_channel::irq_of(_cfg.dma_controller, _cfg.dma_channel);
+    nvic().enable(irqn);
 
     // 启动：内部完成 清标志 → CR2.DMA=1 → HAL_DMA_Start_IT → SWSTART|EXTTRIG 触发
     if (HAL_ADC_Start_DMA(&_hadc, (uint32_t *)buf, (uint32_t)_cfg.channel_count * frames) != HAL_OK)
     {
-        HAL_NVIC_DisableIRQ(irqn);
+        nvic().disable(irqn);
         return false;
     }
     return true;
@@ -346,7 +340,8 @@ void adc_port::dma_stop()
     {
         (void)HAL_ADC_Stop_DMA(&_hadc); // 停 ADC + DMA Abort + 状态复位 READY
     }
-    HAL_NVIC_DisableIRQ(_dma_irqn(_cfg.dma_controller, _cfg.dma_channel));
+    if (_dma_map_ok(_cfg.dma_controller, _cfg.dma_channel))
+        nvic().disable(dma_channel::irq_of(_cfg.dma_controller, _cfg.dma_channel));
 
     // 复位为轮询单通道模式（后续 read_raw/scan_raw 直接可用）
     _set_mode(1, false);

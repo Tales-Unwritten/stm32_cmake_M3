@@ -1,5 +1,7 @@
 #include "device_w25qxx.hpp"
 
+#include "stm32f1xx_hal.h" // HAL_GetTick（wait_busy 超时兜底）
+
 w25qxx::w25qxx(spi_bus &spi) : _spi(spi), _init(false)
 {
 }
@@ -60,18 +62,23 @@ void w25qxx::write_disable()
 
 void w25qxx::wait_busy()
 {
+    // 带超时兜底：器件不在/损坏时不能死等（片擦最慢，W25Q64 手册上限约 100s，
+    // 这里给 30s；超时后直接返回，由调用方的后续读写自行暴露失败）
+    const uint32_t t0 = HAL_GetTick();
     while (read_status() & 0x01)
     {
-    };
+        if ((uint32_t)(HAL_GetTick() - t0) > 30000U)
+            return;
+    }
 }
 
 void w25qxx::read(uint32_t addr, uint8_t *buf, uint16_t len)
 {
     _cs_low();
     _transfer(W25QXX_CMD_READ_DATA);
-    _transfer(addr << 16);
-    _transfer(addr << 8);
-    _transfer(addr);
+    _transfer((uint8_t)(addr >> 16)); // 24 位地址：高→低（左移会截断成 0，地址 >255 全错）
+    _transfer((uint8_t)(addr >> 8));
+    _transfer((uint8_t)(addr));
 
     for (uint16_t i = 0; i < len; i++)
     {
@@ -105,9 +112,9 @@ void w25qxx::_write_page(uint32_t addr, const uint8_t *buf, uint16_t len)
 {
     _cs_low();
     _transfer(W25QXX_CMD_PAGE_PROGRAM);
-    _transfer(addr << 16);
-    _transfer(addr << 8);
-    _transfer(addr);
+    _transfer((uint8_t)(addr >> 16));
+    _transfer((uint8_t)(addr >> 8));
+    _transfer((uint8_t)(addr));
     for (uint16_t i = 0; i < len; i++)
     {
         _transfer(buf[i]);
@@ -120,9 +127,9 @@ void w25qxx::sector_rease(uint32_t addr)
 {
     _cs_low();
     _transfer(W25QXX_CMD_SECTOR_ERASE);
-    _transfer(addr << 16);
-    _transfer(addr << 8);
-    _transfer(addr);
+    _transfer((uint8_t)(addr >> 16));
+    _transfer((uint8_t)(addr >> 8));
+    _transfer((uint8_t)(addr));
 
     _cs_high();
     wait_busy();
