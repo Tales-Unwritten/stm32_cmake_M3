@@ -20,7 +20,7 @@ const device_eeprom::_model_info device_eeprom::_model_table[] = {
 //  构造 & 初始化
 // ============================================================================
 
-device_eeprom::device_eeprom(inter_i2c_bus &bus, const eeprom_config &cfg)
+device_eeprom::device_eeprom(i2c_bus &bus, const eeprom_config &cfg)
     : _bus(bus)
     , _cfg(cfg)
     , _i2c_base(0)
@@ -104,7 +104,7 @@ bool device_eeprom::_begin_write(uint16_t mem_addr)
         uint8_t dev_addr = _page_device_addr(mem_addr);
         uint8_t offset   = _page_offset(mem_addr);
 
-        _bus.write_byte(dev_addr & 0xFE);  // R/W = 0
+        _bus.write_byte(_addr_w(dev_addr)); // R/W = 0
         if (!_bus.wait_ack()) return false;
 
         _bus.write_byte(offset);
@@ -113,7 +113,7 @@ bool device_eeprom::_begin_write(uint16_t mem_addr)
     else if (_dual_addr)
     {
         // 双字节地址型号
-        _bus.write_byte(_i2c_base & 0xFE);  // R/W = 0
+        _bus.write_byte(_addr_w(_i2c_base)); // R/W = 0
         if (!_bus.wait_ack()) return false;
 
         _bus.write_byte((mem_addr >> 8) & 0xFF);
@@ -125,7 +125,7 @@ bool device_eeprom::_begin_write(uint16_t mem_addr)
     else
     {
         // 单字节地址型号（24C02）
-        _bus.write_byte(_i2c_base & 0xFE);  // R/W = 0
+        _bus.write_byte(_addr_w(_i2c_base)); // R/W = 0
         if (!_bus.wait_ack()) return false;
 
         _bus.write_byte(mem_addr & 0xFF);
@@ -150,11 +150,11 @@ bool device_eeprom::_begin_read(uint16_t mem_addr)
     uint8_t read_addr;
     if (_page_addressed)
     {
-        read_addr = _page_device_addr(mem_addr) | 0x01;  // R/W = 1
+        read_addr = _addr_r(_page_device_addr(mem_addr)); // R/W = 1
     }
     else
     {
-        read_addr = _i2c_base | 0x01;  // R/W = 1
+        read_addr = _addr_r(_i2c_base); // R/W = 1
     }
 
     _bus.write_byte(read_addr);
@@ -181,9 +181,9 @@ bool device_eeprom::_wait_write_cycle()
 
         uint8_t dev_addr;
         if (_page_addressed)
-            dev_addr = _page_device_addr(0) & 0xFE;  // 任选一页试探
+            dev_addr = _addr_w(_page_device_addr(0)); // 任选一页试探
         else
-            dev_addr = _i2c_base & 0xFE;
+            dev_addr = _addr_w(_i2c_base);
 
         _bus.write_byte(dev_addr);
         if (_bus.wait_ack(100))
@@ -270,15 +270,10 @@ bool device_eeprom::read(uint16_t mem_addr, uint8_t *buf, uint16_t len)
         return false;
     }
 
-    for (uint16_t i = 0; i < len; i++)
-    {
-        buf[i] = _bus.read_byte();
+    // 批量接收：软总线走默认逐字节实现，硬件总线走 F1 EV7 时序；
+    // 两者都内含末字节 NACK + STOP，因此这里不再调用 stop()
+    _bus.read_bytes(buf, len);
 
-        // 最后一个字节发 NACK，其余发 ACK
-        _bus.write_ack((i == len - 1) ? 1 : 0);
-    }
-
-    _bus.stop();
     _bus.unlock();
     return true;
 }
@@ -346,7 +341,7 @@ bool device_eeprom::probe()
     _bus.lock();
 
     _bus.start();
-    _bus.write_byte(_i2c_base & 0xFE);
+    _bus.write_byte(_addr_w(_i2c_base));
     bool ack = _bus.wait_ack(500);
     _bus.stop();
 

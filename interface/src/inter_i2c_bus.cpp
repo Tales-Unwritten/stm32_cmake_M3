@@ -144,7 +144,7 @@ uint8_t inter_i2c_bus::read_byte()
     return ByteValue;
 }
 
-uint8_t inter_i2c_bus::wait_ack(uint16_t timeout)
+bool inter_i2c_bus::wait_ack(uint16_t timeout)
 {
     // 释放 SDA，等待从机拉低
     _write_sda(1);
@@ -155,12 +155,12 @@ uint8_t inter_i2c_bus::wait_ack(uint16_t timeout)
         if (--timeout == 0)
         {
             _write_scl(0);
-            return 0; // 超时，无应答
+            return false; // 超时，无应答
         }
     }
 
     _write_scl(0);
-    return 1; // 收到应答
+    return true; // 收到应答
 }
 
 void inter_i2c_bus::write_ack(uint8_t AckValue)
@@ -194,7 +194,7 @@ void inter_i2c_bus::unlock()
     _busy = 0;
 }
 
-uint8_t inter_i2c_bus::is_busy()
+uint8_t inter_i2c_bus::is_busy() const
 {
     return _busy;
 }

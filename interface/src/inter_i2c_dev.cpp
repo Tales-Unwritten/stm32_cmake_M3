@@ -44,44 +44,34 @@ void inter_i2c_dev::write_16bit(uint8_t reg, uint16_t data)
 uint16_t inter_i2c_dev::read_16bit(uint8_t reg)
 {
     uint16_t data = 0;
+    bool success = false;
     _err = 0;
 
     _bus->lock();
 
     _bus->start();
     _bus->write_byte(_addr << 1);
-    if (_bus->wait_ack())
-    {
-        _bus->write_byte(reg);
-        if (_bus->wait_ack())
-        {
-            _bus->start();
-            _bus->write_byte((_addr << 1) | 0x01);
-            if (_bus->wait_ack())
-            {
-                uint8_t msb = _bus->read_byte();
-                _bus->write_ack(0); // ACK
+    if (!_bus->wait_ack()) { _err = 1; goto exit; }
 
-                uint8_t lsb = _bus->read_byte();
-                _bus->write_ack(1); // NACK
+    _bus->write_byte(reg);
+    if (!_bus->wait_ack()) { _err = 1; goto exit; }
 
-                data = (msb << 8) | lsb;
-            }
-            else
-            {
-                _err = 1;
-            }
-        }
-        else
-        {
-            _err = 1;
-        }
-    }
-    else
+    _bus->start();
+    _bus->write_byte((_addr << 1) | 0x01);
+    if (!_bus->wait_ack()) { _err = 1; goto exit; }
+
     {
-        _err = 1;
+        // 批量接收：软总线走默认逐字节实现，硬件总线走 F1 EV7 时序；
+        // 两者都内含末字节 NACK + STOP
+        uint8_t raw[2];
+        _bus->read_bytes(raw, 2);
+        data = (uint16_t)((raw[0] << 8) | raw[1]);
+        success = true;
     }
-    _bus->stop();
+
+exit:
+    // 成功时 read_bytes 已发出 STOP，失败路径才需要收尾
+    if (!success) _bus->stop();
     _bus->unlock();
     return data;
 }
@@ -140,16 +130,18 @@ bool inter_i2c_dev::freedom_read(uint8_t reg, uint64_t *data, uint8_t length)
     _bus->write_byte((_addr << 1) | 0x01);
     if (!_bus->wait_ack()) { _err = 1; goto exit; }
 
-    for (uint8_t i = 0; i < length; i++)
     {
-        uint8_t rx = _bus->read_byte();
-        *data = (*data << 8) | rx;
-        _bus->write_ack((i == (length - 1)) ? 1 : 0);
+        // 批量接收：软总线走默认逐字节实现，硬件总线走 F1 EV7 时序
+        uint8_t raw[8];
+        _bus->read_bytes(raw, length);
+        for (uint8_t i = 0; i < length; i++)
+            *data = (*data << 8) | raw[i];
+        success = true;
     }
-    success = true;
 
 exit:
-    _bus->stop();
+    // 成功时 read_bytes 已发出 STOP，失败路径才需要收尾
+    if (!success) _bus->stop();
     _bus->unlock();
     return success;
 }

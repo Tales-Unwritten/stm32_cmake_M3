@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 
 #include <cstdint>
-#include "inter_i2c_bus.hpp"
+#include "inter_i2c.hpp"
 #include "inter_io_ctrl.hpp"
 
 // ============================================================================
@@ -267,7 +267,8 @@ public:
     //  构造
     // ================================================================
 
-    explicit device_eeprom(inter_i2c_bus &bus, const eeprom_config &cfg);
+    /// @param bus 任意 I2C 总线实现：inter_i2c_bus（软件）或 i2c_hw_port（硬件）
+    explicit device_eeprom(i2c_bus &bus, const eeprom_config &cfg);
 
     device_eeprom(const device_eeprom &)            = delete;
     device_eeprom &operator=(const device_eeprom &) = delete;
@@ -388,7 +389,7 @@ private:
 
     // ── 数据成员 ────────────────────────────────────────────
 
-    inter_i2c_bus  &_bus;
+    i2c_bus        &_bus;   // 软/硬 I2C 总线（由调用方注入）
     eeprom_config   _cfg;
     uint8_t         _i2c_base;      // 基础 7-bit 器件地址（含引脚配置，不含页位）
     uint16_t        _capacity;
@@ -418,6 +419,14 @@ private:
 
     /// 计算页内偏移（对于页寻址型号，即 mem_addr % 256）
     uint8_t _page_offset(uint16_t mem_addr) const;
+
+    /// 7-bit 器件地址 → 总线上的 8-bit 地址字节（末尾补 R/W 位）
+    /// 注意：_i2c_base / _page_device_addr() 返回的都是 **7-bit** 地址，
+    ///       上总线前必须整体左移 1 位。旧代码直接 `& 0xFE` 是错的，
+    ///       会发出 0x50/0x51 而不是 0xA0/0xA1（踩到总线上另一个
+    ///       7-bit 0x28 器件，造成“能读不能写”的假象）。
+    static constexpr uint8_t _addr_w(uint8_t addr7) noexcept { return (uint8_t)((addr7 << 1) & 0xFEu); }
+    static constexpr uint8_t _addr_r(uint8_t addr7) noexcept { return (uint8_t)((addr7 << 1) | 0x01u); }
 
     // ── L2 内部方法 ────────────────────────────────────────
 

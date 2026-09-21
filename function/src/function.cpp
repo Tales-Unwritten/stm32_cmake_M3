@@ -22,6 +22,10 @@
 #include "dma_selftest.hpp"
 #endif
 
+#ifdef ENABLE_I2C_WDT_SELFTEST
+#include "i2c_wdt_selftest.hpp"
+#endif
+
 // ============================================================
 // [ADC 多通道实测代码，保留供查看；不需要时请删除本段 + function_init()
 //  中的 adc_multi_verify() 调用 + 上方 inter_adc.hpp/stdarg/stdio 三个头]
@@ -131,7 +135,14 @@ flash_port deep_flash;
 void function_init(void)
 {
     // DebugPort_Init();
-#ifdef ENABLE_FLASH_SELFTEST
+#if defined(ENABLE_I2C_WDT_SELFTEST)
+    // ── 硬件 I2C(PB6/PB7) + EEPROM(0xA0/0xA1) + IWDG/WWDG 自测固件 ──
+    // 通信通道：debug_uart（USART1 PA9/PA10，与 device_serial 唯一实例共用）
+    // 注意：本函数不返回（看门狗一旦启动无法关闭，末尾常驻喂狗），
+    //       因此下面三个分支必须互斥（#if/#elif/#else），不允许掉入正常固件分支。
+    DebugPort_Init();
+    i2c_wdt_selftest_main();
+#elif defined(ENABLE_FLASH_SELFTEST)
     // ── 片上 flash_port 自测固件：跑完用例后进主循环空转 ──────
     // 通信通道：debug_uart（USART1 PA9/PA10，与 device_serial 唯一实例共用）
     DebugPort_Init();

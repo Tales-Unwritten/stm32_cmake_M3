@@ -48,6 +48,13 @@ option(FLASH_SELFTEST "Build with on-chip flash_port selftest harness" OFF)
 #   3. 使用 preset dma_selftest 构建到 build/dma_selftest
 option(DMA_SELFTEST "Build with DMA memcpy selftest harness" OFF)
 
+# ── 硬件 I2C + 看门狗自测开关（默认 OFF，不影响正常固件） ────────
+# ON 时：
+#   1. 追加 function/src/i2c_wdt_selftest.cpp（硬件 I2C/EEPROM + IWDG/WWDG 自测）
+#   2. 定义 ENABLE_I2C_WDT_SELFTEST，function_init() 改为执行自测
+#   3. 使用 preset i2c_wdt_selftest 构建到 build/i2c_wdt_selftest
+option(I2C_WDT_SELFTEST "Build with hardware-I2C EEPROM + watchdog selftest harness" OFF)
+
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -80,6 +87,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # ---- interface：外设接口封装层 -----------------
     interface/src/inter_io_ctrl.cpp
     interface/src/inter_i2c_bus.cpp
+    interface/src/inter_i2c_hw.cpp
     interface/src/inter_i2c_dev.cpp
     interface/src/inter_soft_spi.cpp
     interface/src/inter_soft_uart.cpp
@@ -91,6 +99,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_adc.cpp
     interface/src/inter_exti.cpp
     interface/src/inter_nvic.cpp
+    interface/src/inter_wdt.cpp
 
     # interface/src/inter_timer.cpp
 
@@ -101,6 +110,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     device/src/device_ina228.cpp
     device/src/device_serial.cpp
     device/src/device_w25qxx.cpp
+    device/src/device_eeprom.cpp
 
     # ---- protocol：通信协议层 ----------------------
     # protocol/modbus/src/xxx.cpp
@@ -152,6 +162,16 @@ if(DMA_SELFTEST)
     )
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         ENABLE_DMA_SELFTEST=1
+    )
+endif()
+
+# 硬件 I2C + 看门狗自测固件：仅在 I2C_WDT_SELFTEST=ON 时追加源文件与编译宏
+if(I2C_WDT_SELFTEST)
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        function/src/i2c_wdt_selftest.cpp
+    )
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        ENABLE_I2C_WDT_SELFTEST=1
     )
 endif()
 

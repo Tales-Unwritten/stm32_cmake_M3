@@ -24,6 +24,12 @@
     "reveal": "always"
   },
   {
+    "label": "flash_i2c_wdt_selftest",
+    "command": "cmake --preset i2c_wdt_selftest && cmake --build --preset i2c_wdt_selftest -j$(nproc 2>/dev/null || echo 4) && probe-rs download --speed 4000 --chip STM32F103ZETx build/i2c_wdt_selftest/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
+  },
+  {
     "label": "flash_debug",
     "command": " probe-rs download --speed 4000 --chip STM32F103ZETx build/Debug/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
     "tags": ["flash"],

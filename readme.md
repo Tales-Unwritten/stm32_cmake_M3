@@ -17,14 +17,15 @@
 - **驱动分层思想**：器件驱动只依赖 `interface` 的抽象接口（如 `spi_bus` 基类、`io_ctrl`），
   可在**软/硬件**外设之间透明切换；平台相关差异被收敛在 `interface` 层内部。
 - **当前已完成路线**（对应 git 历史）：
-  软串口/硬件串口 → SPI（软/硬统一接口）→ W25Qxx 外部 Flash → 片上 Flash 安全读写驱动（含可选自测固件）。
+  软串口/硬件串口 → SPI（软/硬统一接口）→ W25Qxx 外部 Flash → 片上 Flash 安全读写驱动（含可选自测固件）
+  → I2C（软/硬统一接口，`i2c_bus`）→ 硬件 I2C 主机（F1 EV7 时序，含可选 I2C+WDT 自测固件）→ 看门狗（IWDG/WWDG）。
 
 ## 2. 目录架构
 
 ```
 stm32_cmake_M3/
 ├── CMakeLists.txt              # 主构建入口：按“层”分块列出源文件（接入开关所在）
-├── CMakePresets.json           # 构建预设：Debug / Release / selftest（片上 Flash 自测固件）
+├── CMakePresets.json           # 构建预设：Debug / Release / selftest / dma_selftest / i2c_wdt_selftest
 ├── stm32_cmake_M3.ioc          # STM32CubeMX 工程（改引脚/外设后重新生成 Core/）
 ├── startup_stm32f103xe.s       # 启动文件（CubeMX 生成）
 ├── STM32F103xx_FLASH.ld        # 链接脚本（512KB Flash）
@@ -43,6 +44,8 @@ stm32_cmake_M3/
 ├── function/                   # 基础功能层：启动/轮询入口 function_init/loop
 │   ├── inc/function.hpp  src/function.cpp
 │   ├── inc/flash_selftest.hpp src/flash_selftest.cpp   # 仅 selftest 预设参与构建
+│   ├── inc/dma_selftest.hpp   src/dma_selftest.cpp     # 仅 dma_selftest 预设参与构建
+│   └── i2c_wdt_selftest.hpp src/i2c_wdt_selftest.cpp # 仅 i2c_wdt_selftest 预设参与构建（硬件 I2C+EEPROM+IWDG/WWDG，已板上实测通过）
 ├── interface/                  # ⚠️ 外设接口封装层（核心移植对象，部分“开发中”）
 │   ├── inc/  src/              #   见第 3 节状态表
 ├── device/                     # 器件驱动层（基于 interface，少量已接入）
@@ -54,7 +57,7 @@ stm32_cmake_M3/
 ├── docs/                       # 芯片手册 / 器件规格书（PDF）
 ├── tools/                      # 辅助脚本（flash_selftest.py 等）
 ├── .zed/                       # Zed 编辑器任务（构建 / 烧录 / 三远程推拉）
-└── build/                      # 构建产物（Debug/Release/selftest 三个子目录）
+└── build/                      # 构建产物（Debug/Release/selftest/dma_selftest/i2c_wdt_selftest 子目录）
 ```
 
 | 层/文件 | 职责 | 构建状态 |
@@ -80,11 +83,14 @@ stm32_cmake_M3/
 |---|---|
 | `inter_io_ctrl` | GPIO 输入/输出/复用（AFIO）抽象，软 I2C/软 SPI/软串口等共用 |
 | `inter_spi_bus.hpp` | SPI 总线抽象基类（软/硬 SPI 统一入口，纯接口） |
+| `inter_i2c.hpp` | I2C 总线抽象基类（软/硬 I2C 统一入口）；含批量接收 `read_bytes()`（默认逐字节实现，硬件实现覆写）——设备驱动只依赖它即可透明切换软/硬总线 |
 | `inter_spi` | 硬件 SPI 主机（STM32 HAL） |
 | `inter_soft_spi` | 软件 SPI（IO 模拟） |
 | `inter_soft_uart` | 软件串口（基于 `HAL_GetTick` 超时） |
 | `inter_usart` | 硬件串口（HAL UART，模板化收发缓冲） |
-| `inter_i2c_bus` / `inter_i2c_dev` | 软件 I2C 总线 / 器件访问封装 |
+| `inter_i2c_bus` / `inter_i2c_dev` | 软件 I2C 总线 / 器件访问封装（`inter_i2c_bus` 实现 `i2c_bus` 接口，沿用 `read_bytes()` 默认实现，逐字节路径未改动）；`inter_i2c_dev::read_16bit()` / `freedom_read()` 统一经 `read_bytes()` 接收 |
+| `inter_i2c_hw` | 硬件 I2C 主机（STM32Cube **LL** `stm32f1xx_ll_i2c.h`，免改 hal_conf/驱动源）。F1 主模式时序修正：`BUSY` 代替 `STOPF`、数据阶段 NACK 查 `AF`；**`wait_ack()` 只等 `ADDR` 置位而推迟清除**（`_addr_pending`），由 `write_byte()`（写方向）/`stop()`（收尾）/`read_bytes()`（接收方向）按场景在正确时机补清——这是多字节读能对齐的关键。`read_bytes()` 逐分支对照树内 `HAL_I2C_Master_Receive()` 的 EV7 流程实现（len==1 / len==2 用 `POS` / len≥3 末三字节特殊处理 / `BTF` 成对搬 `DR`），`i2c_read_reg()` 已合并为单一实现。实现 `i2c_bus` 并带 `bus_recovery()`（9 时钟 + STOP + 重配） |
+| `inter_wdt` | 看门狗（IWDG/WWDG，STM32 HAL `HAL_IWDG_*` / `HAL_WWDG_*`；需启用 `HAL_IWDG/WWDG_MODULE_ENABLED` 与对应驱动源） |
 | `inter_flash` | 片上 Flash 安全读写（F1 HAL；工程以 `FLASH_CAPACITY_KB=512` 适配 VET6） |
 | `inter_dma` | DMA 通道抽象（F1 HAL；M1 自管理搬运/传输 + M2 HAL 托管，12 通道强符号 ISR 路由 + 通道号→IRQn 映射） |
 | `inter_adc` | ADC 端口（F1 HAL；阻塞轮询 + DMA 连续采集，ADC1→DMA1_Ch1 / ADC3→DMA2_Ch5，DMA 资源来自 `inter_dma`） |
@@ -100,11 +106,9 @@ stm32_cmake_M3/
 |---|---|
 | `inter_can` | GD32 bxCAN 代码 + F1 引脚注释混杂，待移植 |
 | `inter_dac` | GD32 DAC 配置，F1 无 DAC，待改造/裁剪 |
-| `inter_i2c_hw` | GD32 硬件 I2C，待移植（当前软 I2C 已够用） |
-| `inter_i2c_test_simple.hpp` | I2C 自测代码（header 单测），未整理 |
+| `inter_i2c_test_simple.hpp` | I2C 自测代码（旧 header 单测，含 GD32 头文件；未被任何源文件 include，处于休眠） |
 | `inter_rtc` | GD32 RTC，待移植 |
 | `inter_timer` | GD32 定时器（含 PWM/编码器能力），待移植 |
-| `inter_wdt` | GD32 IWDG 看门狗，待移植 |
 
 ## 4. device 层接入状态
 
@@ -113,8 +117,8 @@ stm32_cmake_M3/
 
 | 状态 | 器件 |
 |---|---|
-| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485） |
-| 🟡 未接入（代码随包携带） | `device_w25q128` 及其余约 60 个驱动（24LC/AT24 EEPROM、ADS1115、BH1750、DS3232、LCD1602、MAX31855、SHT3x/4x、PCF8574、MCP23x17 等），需要时在 `CMakeLists.txt` 取消注释并实测 |
+| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485）、`device_eeprom`（AT24Cxx 通用驱动，经 `i2c_bus` 可跑软/硬 I2C；`read()` 走 `i2c_bus::read_bytes()`，软/硬总线共用同一接收路径） |
+| 🟡 未接入（代码随包携带） | `device_w25q128` 及其余约 60 个驱动（24LC/CAT24 FRAM、ADS1115、BH1750、DS3232、LCD1602、MAX31855、SHT3x/4x、PCF8574、MCP23x17 等），需要时在 `CMakeLists.txt` 取消注释并实测 |
 
 ## 5. 其余层状态
 
@@ -122,7 +126,10 @@ stm32_cmake_M3/
 - **`protocol/`**：`modbus`、`string`（字符串指令协议）、`hex` 源码随包携带，主工程**未接入**；
   `protocol/iap/` 是**独立子工程**（boot/app 分区串口升级），拥有自己的 `CMakeLists.txt`、分区链接脚本（`boot.ld`/`app_a.ld`/`app_b.ld`）与说明文档，请阅读 `protocol/iap/README.md`。
 - **`function/`**：`function_init()` 目前用于板级初始化与片上 Flash 读写验证；`flash_selftest.cpp` 为片上 Flash 自测主体，
-  通过 `FLASH_SELFTEST=ON`（即 `selftest` 预设）单独构建。
+  通过 `FLASH_SELFTEST=ON`（即 `selftest` 预设）单独构建。同理 `dma_selftest.cpp`（`DMA_SELFTEST=ON`）
+  与 `i2c_wdt_selftest.cpp`（`I2C_WDT_SELFTEST=ON`，硬件 I2C + EEPROM + IWDG/WWDG 验证）各自独立构建。
+
+> `i2c_wdt_selftest` 已在目标板（STM32F103xE，512KB Flash）上实测通过：软/硬 I2C 扫描均识别到 `0x50`(EEPROM) 与 `0x68`，硬件 I2C 侧 `eeprom.probe / read / write_verified / read_sequential(32B) / restore` 与 `i2c_write_reg/i2c_read_reg` 的 len=1/2/8 全部 PASS（`HW SUMMARY fail=0`、`VERDICT hw_fail=0`），IWDG/WWDG 配置回读与按时喂狗存活全部 PASS。
 
 ## 6. 构建与烧录
 
@@ -133,6 +140,9 @@ cmake --preset Release && cmake --build --preset Release
 
 # 片上 Flash 自测固件（FLASH_SELFTEST=ON）
 cmake --preset selftest && cmake --build --preset selftest
+
+# 硬件 I2C(PB6/PB7) + EEPROM(0xA0/0xA1) + IWDG/WWDG 自测固件（I2C_WDT_SELFTEST=ON）
+cmake --preset i2c_wdt_selftest && cmake --build --preset i2c_wdt_selftest
 
 # 烧录（probe-rs；构建后自动生成 .elf/.hex/.bin 并打印内存占用）
 probe-rs download --speed 4000 --chip <目标芯片> build/Release/stm32_cmake_M3.elf
