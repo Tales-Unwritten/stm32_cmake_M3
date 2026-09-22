@@ -18,7 +18,8 @@
   可在**软/硬件**外设之间透明切换；平台相关差异被收敛在 `interface` 层内部。
 - **当前已完成路线**（对应 git 历史）：
   软串口/硬件串口 → SPI（软/硬统一接口）→ W25Qxx 外部 Flash → 片上 Flash 安全读写驱动（含可选自测固件）
-  → I2C（软/硬统一接口，`i2c_bus`）→ 硬件 I2C 主机（F1 EV7 时序，含可选 I2C+WDT 自测固件）→ 看门狗（IWDG/WWDG）。
+  → I2C（软/硬统一接口，`i2c_bus`）→ 硬件 I2C 主机（F1 EV7 时序，含可选 I2C+WDT 自测固件）→ 看门狗（IWDG/WWDG）
+  → OLED（SSD1306 128×64，软件 I2C，含点屏自测固件）。
 
 ## 2. 目录架构
 
@@ -41,8 +42,8 @@ stm32_cmake_M3/
 │
 ├── app/                        # 应用任务层（预留，未接入构建）
 │   ├── inc/  src/              #   pc_task / private / protocol_conf（多协议抽象头）
-├── function/                   # 基础功能层：启动/轮询入口 app_setup/loop
-│   ├── inc/function.hpp  src/function.cpp
+├── function/                   # 基础功能层：启动/轮询入口 app_setup/loop（默认固件 = OLED 点屏自测）
+│   ├── inc/function.hpp  src/function.cpp             # 默认固件：OLED(SSD1306 软件 I2C) 自测
 │   ├── inc/flash_selftest.hpp src/flash_selftest.cpp   # 仅 selftest 预设参与构建
 │   ├── inc/dma_selftest.hpp   src/dma_selftest.cpp     # 仅 dma_selftest 预设参与构建
 │   └── i2c_wdt_selftest.hpp src/i2c_wdt_selftest.cpp # 仅 i2c_wdt_selftest 预设参与构建（硬件 I2C+EEPROM+IWDG/WWDG，已板上实测通过）
@@ -63,9 +64,9 @@ stm32_cmake_M3/
 | 层/文件 | 职责 | 构建状态 |
 |---|---|---|
 | `Core/`、`Drivers/`、`startup`、`ld` | CubeMX 生成代码、HAL/CMSIS、启动与链接 | ✅ 始终参与构建 |
-| `function/` | `app_setup/loop` 初始化与主循环功能 | ✅ `function.cpp`；`flash_selftest.cpp` 仅 `selftest` 预设 |
+| `function/` | `app_setup/loop` 初始化与主循环功能 | ✅ `function.cpp`（默认固件 = OLED 点屏自测）；`flash_selftest` / `dma_selftest` / `i2c_wdt_selftest` 各自预设单独构建 |
 | `interface/` | 外设接口封装（GPIO/SPI/I2C/UART/Flash/…） | 🟡 部分接入，见第 3 节 |
-| `device/` | 器件驱动（W25Qxx/DS18B20/INA226/INA228/…） | 🟡 少量接入，见第 4 节 |
+| `device/` | 器件驱动（W25Qxx/DS18B20/INA226/INA228/OLED/…） | 🟡 少量接入，见第 4 节 |
 | `app/` | 应用任务（pc_task 等，多协议任务抽象） | 🟡 预留，`CMakeLists.txt` 中已注释 |
 | `protocol/` | modbus / string / hex / iap | 🟡 主工程未接入；`iap` 为独立子工程 |
 | `docs/`、`tools/` | 资料与脚本 | — |
@@ -117,7 +118,7 @@ stm32_cmake_M3/
 
 | 状态 | 器件 |
 |---|---|
-| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485）、`device_eeprom`（AT24Cxx 通用驱动，经 `i2c_bus` 可跑软/硬 I2C；`read()` 走 `i2c_bus::read_bytes()`，软/硬总线共用同一接收路径） |
+| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485）、`device_eeprom`（AT24Cxx 通用驱动，经 `i2c_bus` 可跑软/硬 I2C；`read()` 走 `i2c_bus::read_bytes()`，软/硬总线共用同一接收路径）、`device_oled`（SSD1306 128×64 单色 OLED，页寻址 + 6×8/8×16 ASCII 字库 + 16×16 图元 + 位图，经 `inter_i2c_dev` 走软件 I2C） |
 | 🟡 未接入（代码随包携带） | `device_w25q128` 及其余约 60 个驱动（24LC/CAT24 FRAM、ADS1115、BH1750、DS3232、LCD1602、MAX31855、SHT3x/4x、PCF8574、MCP23x17 等），需要时在 `CMakeLists.txt` 取消注释并实测 |
 
 ## 5. 其余层状态
@@ -125,16 +126,39 @@ stm32_cmake_M3/
 - **`app/`**：`pc_task` / `private` / `protocol_conf` 为多协议应用任务框架的预留代码，`CMakeLists.txt` 已注释，**未接入**。
 - **`protocol/`**：`modbus`、`string`（字符串指令协议）、`hex` 源码随包携带，主工程**未接入**；
   `protocol/iap/` 是**独立子工程**（boot/app 分区串口升级），拥有自己的 `CMakeLists.txt`、分区链接脚本（`boot.ld`/`app_a.ld`/`app_b.ld`）与说明文档，请阅读 `protocol/iap/README.md`。
-- **`function/`**：`app_setup()` 目前用于板级初始化与片上 Flash 读写验证；`flash_selftest.cpp` 为片上 Flash 自测主体，
+- **`function/`**：`app_setup()` 默认固件已切换为 **OLED 点屏自测**（详见第 6 节），不再内联 ADC 多通道实测、
+  片上 Flash 读写、软 485 发送等验证代码；`flash_selftest.cpp` 为片上 Flash 自测主体，
   通过 `FLASH_SELFTEST=ON`（即 `selftest` 预设）单独构建。同理 `dma_selftest.cpp`（`DMA_SELFTEST=ON`）
   与 `i2c_wdt_selftest.cpp`（`I2C_WDT_SELFTEST=ON`，硬件 I2C + EEPROM + IWDG/WWDG 验证）各自独立构建。
 
 > `i2c_wdt_selftest` 已在目标板（STM32F103xE，512KB Flash）上实测通过：软/硬 I2C 扫描均识别到 `0x50`(EEPROM) 与 `0x68`，硬件 I2C 侧 `eeprom.probe / read / write_verified / read_sequential(32B) / restore` 与 `i2c_write_reg/i2c_read_reg` 的 len=1/2/8 全部 PASS（`HW SUMMARY fail=0`、`VERDICT hw_fail=0`），IWDG/WWDG 配置回读与按时喂狗存活全部 PASS。
 
-## 6. 构建与烧录
+## 6. OLED 点屏自测（默认固件）
+
+默认固件（不带任何 `ENABLE_*` 宏的 `function.cpp`）即 OLED 自测，用于点屏与排障：
+
+- **接线**：SCL = `PB3`，SDA = `PB4`（软件 I2C，开漏输出 + 内部上拉，建议外接 4.7k 上拉）。
+  PB3/PB4 复位后默认为 JTAG 的 JTDO/NJTRST，本工程已在 `Core/Src/stm32f1xx_hal_msp.c` 的
+  `HAL_MspInit()` 中调用 `__HAL_AFIO_REMAP_SWJ_NOJTAG()` 释放为普通 GPIO，故无需再手动重映射。
+- **从机地址**：`0x3C`（7 位，SA0=0）；`inter_i2c_dev` 内部左移 1 位，总线上实际发送 `0x78`。
+- **对象链**：`inter_i2c_bus oled_bus(cfg, 1)` → `inter_i2c_dev oled_dev(&oled_bus, 0x3C)` → `Oled oled(oled_dev)`。
+- **流程**：`oled_bus.init()`（配置 PB3/PB4 开漏并释放总线）→ `oled_dev.ping()`（地址探测，串口打印 ACK/NACK）
+  → `oled.init()` → `oled.clear()` → 静态首屏；主循环每 1.5s 循环切换三屏（`F8x16` / `F6x8` / `printInt`+`printUint`）。
+- **观察口**：`debug_uart`（USART1 PA9/PA10, 115200）。
+
+> 本轮点屏排查修复（均在 `device/src/device_oled.cpp` / `function/src/function.cpp`）：
+>
+> 1. **`oled_bus.init()` 此前从未调用** —— `inter_i2c_bus` 构造只建 `io_ctrl` 对象、不配置 GPIO，
+>    缺 `init()` 则 PB3/PB4 不是开漏输出、GPIOB 时钟也未使能，总线必然无波形；已在 `app_setup()` 补上。
+> 2. **`Oled::writeData()` 字节序相反** —— `inter_i2c_dev::freedom_write()` 约定“高字节先发”，
+>    原代码把 `data[0]` 放进最低字节，导致整块字模按字节倒序发送、字符左右镜像；已改为高位在前打包。
+> 3. **6×8 换行阈值越界** —— 原 `pixelCol > 126` 允许第 22 字符从第 126 列起画（越过第 127 列），已改为 `> 120`。
+> 4. **类注释地址错误** —— `device_oled.hpp` 示例把 7 位地址写成 `0x78`（会被二次左移成 `0xF0`），已改为 `0x3C`。
+
+## 7. 构建与烧录
 
 ```sh
-# 构建（Debug / Release）
+# 构建（Debug / Release）：默认固件 = OLED 点屏自测
 cmake --preset Debug && cmake --build --preset Debug
 cmake --preset Release && cmake --build --preset Release
 
@@ -152,7 +176,7 @@ probe-rs reset --chip <目标芯片>
 - Zed 中可直接运行 `.zed/tasks.json` 的 **Build / flash** 任务（含 `release and flash` 一键流程）。
 - 构建后处理会自动生成 `stm32_cmake_M3.hex/.bin` 并打印 RAM/Flash 占用摘要。
 
-## 7. 多远程同步
+## 8. 多远程同步
 
 代码同时镜像到三个托管平台，日常同步使用 `.zed/tasks.json` 中的 git 任务：
 
@@ -164,7 +188,7 @@ probe-rs reset --chip <目标芯片>
 
 - 任务 **`git: push to all remotes (Gitee + GitHub + GitCode)`** / **`git: pull from all remotes (...)`** 一次推/拉三个远程。
 
-## 8. 移植/接入新模块速查
+## 9. 移植/接入新模块速查
 
 1. 硬件外设（interface）：将目标外设源文件改造成 STM32F1 HAL 实现，去掉 `gd32*` 依赖；
 2. 在 `CMakeLists.txt` 对应分区块取消注释（新增文件先按注释规范写好路径）；
