@@ -5,7 +5,7 @@
 /**
  * @brief DMA 内存搬运（M2M）自测入口
  *
- * 仅在 DMA_SELFTEST=ON 的固件里由 function_init() 调用（见 CMakeLists.txt：
+ * 仅在 DMA_SELFTEST=ON 的固件里由 app_setup() 调用（见 CMakeLists.txt：
  * 该开关追加 function/src/dma_selftest.cpp 并定义 ENABLE_DMA_SELFTEST）。
  * 通过 debug_uart(USART1 PA9/PA10, 115200) 输出机器可解析文本：
  *   [DMA] <用例> ... PASS/FAIL  /  [DMA] SUMMARY  /  [DMA] DONE

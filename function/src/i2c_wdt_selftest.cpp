@@ -1,7 +1,7 @@
 // ============================================================
 // 硬件 I2C（i2c_hw_port / device_eeprom）+ 看门狗（wdt_port）自测
 // ============================================================
-// 仅在 I2C_WDT_SELFTEST=ON 的固件里由 function_init() 调用。
+// 仅在 I2C_WDT_SELFTEST=ON 的固件里由 app_setup() 调用。
 // 通信通道：debug_uart（USART1 PA9/PA10 115200，由调用方 DebugPort_Init 初始化）。
 //
 // 接线：

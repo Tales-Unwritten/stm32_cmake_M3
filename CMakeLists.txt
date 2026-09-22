@@ -37,21 +37,21 @@ enable_language(C ASM CXX)
 # ── 片上 Flash 驱动自测开关（默认 OFF，不影响正常固件） ──────────
 # ON 时：
 #   1. 追加 function/src/flash_selftest.cpp（片上自测主体）
-#   2. 定义 ENABLE_FLASH_SELFTEST，function_init() 改为执行自测
+#   2. 定义 ENABLE_FLASH_SELFTEST，app_setup() 改为执行自测
 #   3. 使用 preset Selftest 构建到 build/selftest
 option(FLASH_SELFTEST "Build with on-chip flash_port selftest harness" OFF)
 
 # ── DMA 内存搬运自测开关（默认 OFF，不影响正常固件） ─────────────
 # ON 时：
 #   1. 追加 function/src/dma_selftest.cpp（DMA M2M 搬运自测主体）
-#   2. 定义 ENABLE_DMA_SELFTEST，function_init() 会调用 dma_selftest_main()
+#   2. 定义 ENABLE_DMA_SELFTEST，app_setup() 会调用 dma_selftest_main()
 #   3. 使用 preset dma_selftest 构建到 build/dma_selftest
 option(DMA_SELFTEST "Build with DMA memcpy selftest harness" OFF)
 
 # ── 硬件 I2C + 看门狗自测开关（默认 OFF，不影响正常固件） ────────
 # ON 时：
 #   1. 追加 function/src/i2c_wdt_selftest.cpp（硬件 I2C/EEPROM + IWDG/WWDG 自测）
-#   2. 定义 ENABLE_I2C_WDT_SELFTEST，function_init() 改为执行自测
+#   2. 定义 ENABLE_I2C_WDT_SELFTEST，app_setup() 改为执行自测
 #   3. 使用 preset i2c_wdt_selftest 构建到 build/i2c_wdt_selftest
 option(I2C_WDT_SELFTEST "Build with hardware-I2C EEPROM + watchdog selftest harness" OFF)
 
@@ -111,6 +111,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     device/src/device_serial.cpp
     device/src/device_w25qxx.cpp
     device/src/device_eeprom.cpp
+    device/src/device_oled.cpp
 
     # ---- protocol：通信协议层 ----------------------
     # protocol/modbus/src/xxx.cpp

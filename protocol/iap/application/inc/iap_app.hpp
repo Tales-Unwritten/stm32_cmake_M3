@@ -5,7 +5,7 @@
  *
  * 调用点约定：
  *   - Iap_AppInit()      main() 第一行（systick_config 之前，VTOR 须先于任何中断）
- *   - Iap_AppFeedWdt()   function_init/loop（boot 跳转前已使能 IWDG，必须周期喂狗）
+ *   - Iap_AppFeedWdt()   app_setup/loop（boot 跳转前已使能 IWDG，必须周期喂狗）
  *   - Iap_AppReportBootOk() 主循环每圈调用（内部判定首圈 + PENDING 窗口）
  *   - Iap_RequestUpgrade()  协议层触发（Modbus 寄存器 / String 命令）
  */

@@ -5,7 +5,7 @@
 /**
  * @brief 片上 inter_flash(flash_port) 自测入口
  *
- * 仅在 FLASH_SELFTEST=ON 的固件里由 function_init() 调用。
+ * 仅在 FLASH_SELFTEST=ON 的固件里由 app_setup() 调用。
  * 通过 soft_485(115200, 半双工) 输出机器可解析文本：
  *   [BOOT] / [STATE] / [PERSIST] / [READY] / [CASE] / [INFO] / [SUMMARY] / [DONE]
  *

@@ -41,7 +41,7 @@ stm32_cmake_M3/
 │
 ├── app/                        # 应用任务层（预留，未接入构建）
 │   ├── inc/  src/              #   pc_task / private / protocol_conf（多协议抽象头）
-├── function/                   # 基础功能层：启动/轮询入口 function_init/loop
+├── function/                   # 基础功能层：启动/轮询入口 app_setup/loop
 │   ├── inc/function.hpp  src/function.cpp
 │   ├── inc/flash_selftest.hpp src/flash_selftest.cpp   # 仅 selftest 预设参与构建
 │   ├── inc/dma_selftest.hpp   src/dma_selftest.cpp     # 仅 dma_selftest 预设参与构建
@@ -63,7 +63,7 @@ stm32_cmake_M3/
 | 层/文件 | 职责 | 构建状态 |
 |---|---|---|
 | `Core/`、`Drivers/`、`startup`、`ld` | CubeMX 生成代码、HAL/CMSIS、启动与链接 | ✅ 始终参与构建 |
-| `function/` | `function_init/loop` 初始化与主循环功能 | ✅ `function.cpp`；`flash_selftest.cpp` 仅 `selftest` 预设 |
+| `function/` | `app_setup/loop` 初始化与主循环功能 | ✅ `function.cpp`；`flash_selftest.cpp` 仅 `selftest` 预设 |
 | `interface/` | 外设接口封装（GPIO/SPI/I2C/UART/Flash/…） | 🟡 部分接入，见第 3 节 |
 | `device/` | 器件驱动（W25Qxx/DS18B20/INA226/INA228/…） | 🟡 少量接入，见第 4 节 |
 | `app/` | 应用任务（pc_task 等，多协议任务抽象） | 🟡 预留，`CMakeLists.txt` 中已注释 |
@@ -125,7 +125,7 @@ stm32_cmake_M3/
 - **`app/`**：`pc_task` / `private` / `protocol_conf` 为多协议应用任务框架的预留代码，`CMakeLists.txt` 已注释，**未接入**。
 - **`protocol/`**：`modbus`、`string`（字符串指令协议）、`hex` 源码随包携带，主工程**未接入**；
   `protocol/iap/` 是**独立子工程**（boot/app 分区串口升级），拥有自己的 `CMakeLists.txt`、分区链接脚本（`boot.ld`/`app_a.ld`/`app_b.ld`）与说明文档，请阅读 `protocol/iap/README.md`。
-- **`function/`**：`function_init()` 目前用于板级初始化与片上 Flash 读写验证；`flash_selftest.cpp` 为片上 Flash 自测主体，
+- **`function/`**：`app_setup()` 目前用于板级初始化与片上 Flash 读写验证；`flash_selftest.cpp` 为片上 Flash 自测主体，
   通过 `FLASH_SELFTEST=ON`（即 `selftest` 预设）单独构建。同理 `dma_selftest.cpp`（`DMA_SELFTEST=ON`）
   与 `i2c_wdt_selftest.cpp`（`I2C_WDT_SELFTEST=ON`，硬件 I2C + EEPROM + IWDG/WWDG 验证）各自独立构建。
 

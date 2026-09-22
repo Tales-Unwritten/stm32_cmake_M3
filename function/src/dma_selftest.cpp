@@ -1,7 +1,7 @@
 // ============================================================
 // DMA 内存搬运（M2M）自测 —— STM32F103VET6
 // ============================================================
-// 仅在 DMA_SELFTEST=ON 的固件里由 function_init() 调用。
+// 仅在 DMA_SELFTEST=ON 的固件里由 app_setup() 调用。
 // 通信通道：debug_uart（USART1 PA9/PA10 115200，由调用方 DebugPort_Init 初始化）。
 //
 // 通道选 DMA1_Channel4（0-based 3）：避开 ADC1 硬件固定的 DMA1_Channel1。

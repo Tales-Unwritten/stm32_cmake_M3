@@ -5,7 +5,7 @@
 /**
  * @brief 硬件 I2C + 看门狗 自测入口
  *
- * 仅在 I2C_WDT_SELFTEST=ON 的固件里由 function_init() 调用（见 CMakeLists.txt：
+ * 仅在 I2C_WDT_SELFTEST=ON 的固件里由 app_setup() 调用（见 CMakeLists.txt：
  * 该开关追加 function/src/i2c_wdt_selftest.cpp 并定义 ENABLE_I2C_WDT_SELFTEST）。
  * 通过 debug_uart(USART1 PA9/PA10, 115200) 输出机器可解析文本：
  *   [I2C] / [WDT] <用例> ... PASS/FAIL  /  [I2C] SUMMARY  /  [I2C] DONE
