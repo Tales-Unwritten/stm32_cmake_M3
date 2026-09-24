@@ -19,14 +19,15 @@
 - **当前已完成路线**（对应 git 历史）：
   软串口/硬件串口 → SPI（软/硬统一接口）→ W25Qxx 外部 Flash → 片上 Flash 安全读写驱动（含可选自测固件）
   → I2C（软/硬统一接口，`i2c_bus`）→ 硬件 I2C 主机（F1 EV7 时序，含可选 I2C+WDT 自测固件）→ 看门狗（IWDG/WWDG）
-  → OLED（SSD1306 128×64，软件 I2C，含点屏自测固件）。
+  → 硬件 CAN（F1 HAL CAN，阻塞发送 + FIFO0 查询接收）
+  → OLED（128×64，SSD1306/SH1106，软件 I2C，含点屏自测固件）。
 
 ## 2. 目录架构
 
 ```
 stm32_cmake_M3/
 ├── CMakeLists.txt              # 主构建入口：按“层”分块列出源文件（接入开关所在）
-├── CMakePresets.json           # 构建预设：Debug / Release / selftest / dma_selftest / i2c_wdt_selftest
+├── CMakePresets.json           # 构建预设：Debug / Release / selftest / dma_selftest / i2c_wdt_selftest / can_selftest
 ├── stm32_cmake_M3.ioc          # STM32CubeMX 工程（改引脚/外设后重新生成 Core/）
 ├── startup_stm32f103xe.s       # 启动文件（CubeMX 生成）
 ├── STM32F103xx_FLASH.ld        # 链接脚本（512KB Flash）
@@ -46,7 +47,8 @@ stm32_cmake_M3/
 │   ├── inc/function.hpp  src/function.cpp             # 默认固件：OLED(SSD1306 软件 I2C) 自测
 │   ├── inc/flash_selftest.hpp src/flash_selftest.cpp   # 仅 selftest 预设参与构建
 │   ├── inc/dma_selftest.hpp   src/dma_selftest.cpp     # 仅 dma_selftest 预设参与构建
-│   └── i2c_wdt_selftest.hpp src/i2c_wdt_selftest.cpp # 仅 i2c_wdt_selftest 预设参与构建（硬件 I2C+EEPROM+IWDG/WWDG，已板上实测通过）
+│   ├── i2c_wdt_selftest.hpp src/i2c_wdt_selftest.cpp # 仅 i2c_wdt_selftest 预设参与构建（硬件 I2C+EEPROM+IWDG/WWDG，已板上实测通过）
+│   └── can_selftest.hpp     src/can_selftest.cpp     # 仅 can_selftest 预设参与构建（bxCAN 片内回环，无需收发器）
 ├── interface/                  # ⚠️ 外设接口封装层（核心移植对象，部分“开发中”）
 │   ├── inc/  src/              #   见第 3 节状态表
 ├── device/                     # 器件驱动层（基于 interface，少量已接入）
@@ -58,7 +60,7 @@ stm32_cmake_M3/
 ├── docs/                       # 芯片手册 / 器件规格书（PDF）
 ├── tools/                      # 辅助脚本（flash_selftest.py 等）
 ├── .zed/                       # Zed 编辑器任务（构建 / 烧录 / 三远程推拉）
-└── build/                      # 构建产物（Debug/Release/selftest/dma_selftest/i2c_wdt_selftest 子目录）
+└── build/                      # 构建产物（Debug/Release/selftest/dma_selftest/i2c_wdt_selftest/can_selftest 子目录）
 ```
 
 | 层/文件 | 职责 | 构建状态 |
@@ -97,15 +99,15 @@ stm32_cmake_M3/
 | `inter_adc` | ADC 端口（F1 HAL；阻塞轮询 + DMA 连续采集，ADC1→DMA1_Ch1 / ADC3→DMA2_Ch5，DMA 资源来自 `inter_dma`） |
 | `inter_exti` | 外部中断（F1 HAL EXTI；线 0~18，ISR 分发表 + 线互斥，线级 IMR 门控） |
 | `inter_nvic` | NVIC 统一门面（使能/优先级/分组/Pending/Active/SysTick/PRIMASK），收敛全工程 `HAL_NVIC_*` 调用；基类 `nvic_bus` + STM32F1 实现 `nvic_ctrl` |
+| `inter_can` | 硬件 CAN（F1 HAL `stm32f1xx_hal_can.c`，需在 `stm32f1xx_hal_conf.h` 打开 `HAL_CAN_MODULE_ENABLED`）。公共 API 与 GD32 版一致：`can_port::init/deinit/send/recv/rx_ready`；`can_id`→`CAN_HandleTypeDef`+`HAL_CAN_Init/Start`，发送 `HAL_CAN_AddTxMessage`+`IsTxMessagePending`，接收 `HAL_CAN_GetRxMessage(CAN_RX_FIFO0)`；工作模式改用 `can_mode` 枚举；F103 高密度器件仅 1 个 CAN（`can_id::can1`）。TX=复用推挽、RX=输入（同 CubeMX）；句柄由类自持，不占用 CubeMX 的全局 `hcan` |
 
 ### 🟡 开发中（未移植完 / 未接入构建）
 
-> 以下模块源码**源自 GD32F450/470 工程**，仍引用 `gd32*` 头文件/寄存器（如 `inter_timer.hpp` / `inter_can.hpp` 直接 `#include "gd32f4xx.h"`），
+> 以下模块源码**源自 GD32F450/470 工程**，仍引用 `gd32*` 头文件/寄存器（如 `inter_timer.hpp` 直接 `#include "gd32f4xx.h"`），
 > **尚未改造为 STM32F1 HAL**，也不在 `CMakeLists.txt` 的编译列表中——仅 `inter_timer` 留有注释行占位，其余未列出。
 
 | 模块 | 现状 |
 |---|---|
-| `inter_can` | GD32 bxCAN 代码 + F1 引脚注释混杂，待移植 |
 | `inter_dac` | GD32 DAC 配置，F1 无 DAC，待改造/裁剪 |
 | `inter_i2c_test_simple.hpp` | I2C 自测代码（旧 header 单测，含 GD32 头文件；未被任何源文件 include，处于休眠） |
 | `inter_rtc` | GD32 RTC，待移植 |
@@ -118,7 +120,7 @@ stm32_cmake_M3/
 
 | 状态 | 器件 |
 |---|---|
-| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485）、`device_eeprom`（AT24Cxx 通用驱动，经 `i2c_bus` 可跑软/硬 I2C；`read()` 走 `i2c_bus::read_bytes()`，软/硬总线共用同一接收路径）、`device_oled`（SSD1306 128×64 单色 OLED，页寻址 + 6×8/8×16 ASCII 字库 + 16×16 图元 + 位图，经 `inter_i2c_dev` 走软件 I2C） |
+| ✅ 已接入编译 | `device_w25qxx`（SPI 外部 Flash）、`device_ds18b20`（单总线温度）、`device_ina226`、`device_ina228`（I2C 电流/功率监测）、`device_serial`（串口资源实例：debug/rs232/软 rs485）、`device_eeprom`（AT24Cxx 通用驱动，经 `i2c_bus` 可跑软/硬 I2C；`read()` 走 `i2c_bus::read_bytes()`，软/硬总线共用同一接收路径）、`device_oled`（128×64 单色 OLED，支持 SSD1306/SH1106，页寻址 + 6×8/8×16 ASCII 字库 + 16×16 图元 + 位图，经 `inter_i2c_dev` 走软件 I2C） |
 | 🟡 未接入（代码随包携带） | `device_w25q128` 及其余约 60 个驱动（24LC/CAT24 FRAM、ADS1115、BH1750、DS3232、LCD1602、MAX31855、SHT3x/4x、PCF8574、MCP23x17 等），需要时在 `CMakeLists.txt` 取消注释并实测 |
 
 ## 5. 其余层状态
@@ -129,9 +131,12 @@ stm32_cmake_M3/
 - **`function/`**：`app_setup()` 默认固件已切换为 **OLED 点屏自测**（详见第 6 节），不再内联 ADC 多通道实测、
   片上 Flash 读写、软 485 发送等验证代码；`flash_selftest.cpp` 为片上 Flash 自测主体，
   通过 `FLASH_SELFTEST=ON`（即 `selftest` 预设）单独构建。同理 `dma_selftest.cpp`（`DMA_SELFTEST=ON`）
-  与 `i2c_wdt_selftest.cpp`（`I2C_WDT_SELFTEST=ON`，硬件 I2C + EEPROM + IWDG/WWDG 验证）各自独立构建。
+  与 `i2c_wdt_selftest.cpp`（`I2C_WDT_SELFTEST=ON`，硬件 I2C + EEPROM + IWDG/WWDG 验证），
+  以及 `can_selftest.cpp`（`CAN_SELFTEST=ON`，bxCAN 片内 Loopback 全链路收发 + 寄存器白盒校验，无需收发器）各自独立构建。
 
 > `i2c_wdt_selftest` 已在目标板（STM32F103xE，512KB Flash）上实测通过：软/硬 I2C 扫描均识别到 `0x50`(EEPROM) 与 `0x68`，硬件 I2C 侧 `eeprom.probe / read / write_verified / read_sequential(32B) / restore` 与 `i2c_write_reg/i2c_read_reg` 的 len=1/2/8 全部 PASS（`HW SUMMARY fail=0`、`VERDICT hw_fail=0`），IWDG/WWDG 配置回读与按时喂狗存活全部 PASS。
+
+> `can_selftest`（`CAN_SELFTEST=ON`）已在目标板上实测通过：**84 个用例全部 PASS**（`[CAN] SUMMARY pass=84 fail=0`、`[CAN] VERDICT: PASS`），且主循环逐秒 `smoke PASS`。覆盖：寄存器白盒（MSR/MCR/BTR 的 TTCM/ABOM/AWUM/NART/RFLM/TXFP/BRP/TS1/TS2/SJW/模式位、FA1R/FM1R/FS1R、ESR）；bxCAN 片内 Loopback 全链路（标准帧逐字节、扩展帧 29 位、ID 边界、DLC 0~8、FIFO0 三深连发按序）；125k/250k/500k/1M 四个波特率 BRP 与 PCLK1 精确匹配；loopback / silent_loopback / silent 三种模式；deinit 后接口保护与再初始化。无需 CAN 收发器（靠片内回环）。
 
 ## 6. OLED 点屏自测（默认固件）
 
@@ -140,8 +145,11 @@ stm32_cmake_M3/
 - **接线**：SCL = `PB3`，SDA = `PB4`（软件 I2C，开漏输出 + 内部上拉，建议外接 4.7k 上拉）。
   PB3/PB4 复位后默认为 JTAG 的 JTDO/NJTRST，本工程已在 `Core/Src/stm32f1xx_hal_msp.c` 的
   `HAL_MspInit()` 中调用 `__HAL_AFIO_REMAP_SWJ_NOJTAG()` 释放为普通 GPIO，故无需再手动重映射。
+- **控制器 / 列偏移**：`1.3"` 屏多为 **SH1106**（显存 132×64，128 列可见区居中于第 2~129 列，需列偏移 **2**）；
+  `0.96"` 屏多为 **SSD1306**（列偏移 0）。构造时选择：`Oled oled(oled_dev, Oled::Controller::SH1106)` /
+  `Oled::Controller::SSD1306`。偏移不对时屏右侧/左侧会出现未写过的白列，或整幅图像偏移 2 列。
 - **从机地址**：`0x3C`（7 位，SA0=0）；`inter_i2c_dev` 内部左移 1 位，总线上实际发送 `0x78`。
-- **对象链**：`inter_i2c_bus oled_bus(cfg, 1)` → `inter_i2c_dev oled_dev(&oled_bus, 0x3C)` → `Oled oled(oled_dev)`。
+- **对象链**：`inter_i2c_bus oled_bus(cfg, 1)` → `inter_i2c_dev oled_dev(&oled_bus, 0x3C)` → `Oled oled(oled_dev, ctrl)`。
 - **流程**：`oled_bus.init()`（配置 PB3/PB4 开漏并释放总线）→ `oled_dev.ping()`（地址探测，串口打印 ACK/NACK）
   → `oled.init()` → `oled.clear()` → 静态首屏；主循环每 1.5s 循环切换三屏（`F8x16` / `F6x8` / `printInt`+`printUint`）。
 - **观察口**：`debug_uart`（USART1 PA9/PA10, 115200）。
@@ -167,6 +175,9 @@ cmake --preset selftest && cmake --build --preset selftest
 
 # 硬件 I2C(PB6/PB7) + EEPROM(0xA0/0xA1) + IWDG/WWDG 自测固件（I2C_WDT_SELFTEST=ON）
 cmake --preset i2c_wdt_selftest && cmake --build --preset i2c_wdt_selftest
+
+# CAN(inter_can) 自测固件（CAN_SELFTEST=ON）：bxCAN 片内回环跑完整收发链路，无需收发器
+cmake --preset can_selftest && cmake --build --preset can_selftest
 
 # 烧录（probe-rs；构建后自动生成 .elf/.hex/.bin 并打印内存占用）
 probe-rs download --speed 4000 --chip <目标芯片> build/Release/stm32_cmake_M3.elf

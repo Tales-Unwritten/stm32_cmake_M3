@@ -30,6 +30,12 @@
     "reveal": "always"
   },
   {
+    "label": "flash_can_selftest",
+    "command": "cmake --preset can_selftest && cmake --build --preset can_selftest -j$(nproc 2>/dev/null || echo 4) && probe-rs download --speed 4000 --chip STM32F103ZETx build/can_selftest/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
+    "tags": ["flash"],
+    "reveal": "always"
+  },
+  {
     "label": "flash_debug",
     "command": " probe-rs download --speed 4000 --chip STM32F103ZETx build/Debug/stm32_cmake_M3.elf && probe-rs reset --chip STM32F103ZETx",
     "tags": ["flash"],

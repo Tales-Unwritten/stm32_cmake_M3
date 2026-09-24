@@ -28,10 +28,27 @@ public:
         F8x16 = 1,   ///< 8×16 ASCII，每行最多 16 字符
     };
 
+    /**
+     * @brief 控制器类型（决定显存列偏移）
+     *
+     * SSD1306 显存 128×64，列起始 = 0；SH1106（1.3" 屏常见）显存 132×64，
+     * 128 列可见区居中于第 2~129 列，列起始需 +2。若列偏移不对，
+     * 屏右侧/左侧会出现未写过的白列或整幅图像偏移 2 列。
+     */
+    enum class Controller : uint8_t
+    {
+        SSD1306 = 0,   ///< 0.96" 常见，列偏移 0
+        SH1106  = 2,   ///< 1.3" 常见，列偏移 2
+    };
+
     /** SSD1306 8 位从机地址（SA0 拉高 → 7 位 0x3C << 1 = 0x78） */
     static constexpr uint8_t kAddr8Bit = 0x78;
 
-    explicit Oled(inter_i2c_dev &dev) noexcept;
+    /**
+     * @param dev  已构建好、且其总线已 init() 的 I2C 设备
+     * @param ctrl 控制器类型（默认 SSD1306；1.3" 屏请传 Controller::SH1106）
+     */
+    explicit Oled(inter_i2c_dev &dev, Controller ctrl = Controller::SSD1306) noexcept;
     ~Oled() = default;
 
     Oled(const Oled &)            = delete;
@@ -90,12 +107,13 @@ private:
     void writeCmd(uint8_t cmd);
     /** @brief 批量写 GDDRAM 数据，内部按 8 字节分块（freedom_write 上限） */
     void writeData(const uint8_t *data, uint16_t len);
-    /** @brief 将 GDDRAM 写光标设置到 (col, page) */
+    /** @brief 将 GDDRAM 写光标设置到 (col, page)（内部自动加控制器列偏移） */
     void setCursor(uint8_t col, uint8_t page);
 
     // 内部绘图辅助
     void drawAscii8x16(uint8_t x, uint8_t y, const char *str);
     void drawAscii6x8 (uint8_t x, uint8_t y, const char *str);
 
-    inter_i2c_dev &_dev;   ///< 外部 I2C 设备对象（不拥有）
+    inter_i2c_dev &_dev;        ///< 外部 I2C 设备对象（不拥有）
+    const uint8_t  _colOffset;  ///< 显存列偏移（SSD1306=0 / SH1106=2）
 };

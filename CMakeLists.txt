@@ -55,6 +55,13 @@ option(DMA_SELFTEST "Build with DMA memcpy selftest harness" OFF)
 #   3. 使用 preset i2c_wdt_selftest 构建到 build/i2c_wdt_selftest
 option(I2C_WDT_SELFTEST "Build with hardware-I2C EEPROM + watchdog selftest harness" OFF)
 
+# ── CAN(inter_can) 自测开关（默认 OFF，不影响正常固件） ────────
+# ON 时：
+#   1. 追加 function/src/can_selftest.cpp（bxCAN 片内回环自测主体）
+#   2. 定义 ENABLE_CAN_SELFTEST，app_setup() 改为执行自测
+#   3. 使用 preset can_selftest 构建到 build/can_selftest
+option(CAN_SELFTEST "Build with CAN (inter_can) selftest harness" OFF)
+
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -89,6 +96,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     interface/src/inter_i2c_bus.cpp
     interface/src/inter_i2c_hw.cpp
     interface/src/inter_i2c_dev.cpp
+    interface/src/inter_can.cpp
     interface/src/inter_soft_spi.cpp
     interface/src/inter_soft_uart.cpp
     interface/src/inter_usart.cpp
@@ -173,6 +181,16 @@ if(I2C_WDT_SELFTEST)
     )
     target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         ENABLE_I2C_WDT_SELFTEST=1
+    )
+endif()
+
+# CAN(inter_can) 自测固件：仅在 CAN_SELFTEST=ON 时追加源文件与编译宏
+if(CAN_SELFTEST)
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        function/src/can_selftest.cpp
+    )
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        ENABLE_CAN_SELFTEST=1
     )
 endif()
 

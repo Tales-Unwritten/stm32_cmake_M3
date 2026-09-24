@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/loopy/Documents/project/stm32_cmake_M3/build/Release/cmake_install.cmake",
-		"/home/loopy/Documents/project/stm32_cmake_M3/build/Release/cmake/stm32cubemx/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

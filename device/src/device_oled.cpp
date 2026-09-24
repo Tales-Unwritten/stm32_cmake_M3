@@ -38,7 +38,8 @@ uint8_t u32ToStr(char *buf, uint32_t num)
 //==============================================================================
 // 构造
 //==============================================================================
-Oled::Oled(inter_i2c_dev &dev) noexcept : _dev(dev)
+Oled::Oled(inter_i2c_dev &dev, Controller ctrl) noexcept
+    : _dev(dev), _colOffset(static_cast<uint8_t>(ctrl))
 {
 }
 
@@ -73,9 +74,11 @@ void Oled::writeData(const uint8_t *data, uint16_t len)
 
 void Oled::setCursor(uint8_t col, uint8_t page)
 {
+    // 加控制器列偏移：SSD1306 为 0；SH1106(1.3") 可见区从第 2 列开始，需 +2
+    const uint8_t c = static_cast<uint8_t>(col + _colOffset);
     writeCmd(static_cast<uint8_t>(0xB0 | (page & 0x07)));       // 页地址
-    writeCmd(static_cast<uint8_t>(0x10 | ((col & 0xF0) >> 4))); // 列高半字节
-    writeCmd(static_cast<uint8_t>(col & 0x0F));                 // 列低半字节
+    writeCmd(static_cast<uint8_t>(0x10 | ((c & 0xF0) >> 4)));   // 列高半字节
+    writeCmd(static_cast<uint8_t>(c & 0x0F));                   // 列低半字节
 }
 
 //==============================================================================

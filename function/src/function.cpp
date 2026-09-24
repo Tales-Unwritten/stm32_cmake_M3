@@ -19,12 +19,18 @@
 #include "i2c_wdt_selftest.hpp"
 #endif
 
+#ifdef ENABLE_CAN_SELFTEST
+#include "can_selftest.hpp"
+#endif
+
 // ============================================================
-//  OLED 自测（SSD1306 128×64，软件 I2C）
+//  OLED 自测（128×64，软件 I2C）
 // ============================================================
+// 控制器：本工程使用 1.3" 屏 → SH1106（显存 132×64，列偏移 2）；
+//   若换成 0.96" SSD1306 屏，将下方 Controller::SH1106 改为 SSD1306。
 // 接线：SCL = PB3，SDA = PB4（开漏输出 + 内部上拉，建议外部 4.7k 上拉）
 //   注意 PB3/PB4 复位后默认复用为 JTAG 的 JTDO/NJTRST，本工程已在
-//   HAL_MspInit() 中用 __HAL_AFIO_REMAP_SWJ_NOJTAG() 释放为普通 GPIO，
+///   HAL_MspInit() 中用 __HAL_AFIO_REMAP_SWJ_NOJTAG() 释放为普通 GPIO，
 //   故此处无需再调 set_af()。
 // 从机地址：0x3C（7 位，SA0=0）；inter_i2c_dev 内部左移 1 位 → 0x78。
 // 观察口：debug_uart(USART1 PA9/PA10, 115200) 打印每步自测结果。
@@ -41,10 +47,10 @@ inter_i2c_bus oled_bus(cfg, 1); // 半周期延时 1us
 
 inter_i2c_dev oled_dev(&oled_bus, 0x3C);
 
-Oled oled(oled_dev);
+Oled oled(oled_dev, Oled::Controller::SH1106); // 1.3" 屏 = SH1106（列偏移 2）
 
-// ── 自测日志（debug_uart 阻塞发送） ────────────────────────────
-static void oled_log(const char *s)
+// ── 自测日志（debug_uart 阻塞发送；仅默认固件用到） ────────────
+[[maybe_unused]] static void oled_log(const char *s)
 {
     debug_uart.send_data((const uint8_t *)s, (uint16_t)strlen(s));
 }
@@ -57,11 +63,16 @@ void app_setup(void)
     // ── 硬件 I2C(PB6/PB7) + EEPROM(0xA0/0xA1) + IWDG/WWDG 自测固件 ──
     // 通信通道：debug_uart（USART1 PA9/PA10，与 device_serial 唯一实例共用）
     // 注意：本函数不返回（看门狗一旦启动无法关闭，末尾常驻喂狗），
-    //       因此下面两个分支必须互斥，不允许掉入正常固件分支。
+    //       因此下面各分支必须互斥（#if/#elif/#else），不允许掉入正常固件分支。
     i2c_wdt_selftest_main();
 #elif defined(ENABLE_FLASH_SELFTEST)
     // ── 片上 flash_port 自测固件：跑完用例后进主循环空转 ──────
     flash_selftest_main();
+#elif defined(ENABLE_CAN_SELFTEST)
+    // ── CAN(inter_can) 自测固件 ────────────────────────────
+    // 通信通道：debug_uart（USART1 PA9/PA10，与 device_serial 唯一实例共用）
+    // 片内回环跑完整套用例后返回，主循环每 1s 做一次回环冒烟。
+    can_selftest_main();
 #else
     // ── OLED 点屏自测 ──────────────────────────────────────
 #ifdef ENABLE_DMA_SELFTEST
@@ -79,7 +90,7 @@ void app_setup(void)
 
     // 3) 静态首屏
     oled.print(0, 0, "OLED TEST", Oled::Font::F8x16);
-    oled.print(0, 2, "SSD1306 128x64", Oled::Font::F8x16);
+    oled.print(0, 2, "SH1106 128x64", Oled::Font::F8x16);
     oled.print(0, 5, "SCL=PB3 SDA=PB4", Oled::Font::F6x8);
     oled_log("[OLED] setup done\r\n");
 #endif
@@ -89,6 +100,10 @@ void app_loop(void)
 {
 #if defined(ENABLE_I2C_WDT_SELFTEST) || defined(ENABLE_FLASH_SELFTEST)
     // 自测固件在 app_setup() 内自循环，不会走到这里
+#elif defined(ENABLE_CAN_SELFTEST)
+    // CAN 自测：每 1s 做一次片内回环 发送→接收→比对 并打印 [CAN] smoke
+    can_selftest_loop();
+    delay_ms(1000);
 #else
     // 循环切换几屏，验证 ASCII 8×16 / 6×8 与整型渲染
     static uint8_t page = 0;

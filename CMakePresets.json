@@ -47,6 +47,14 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "I2C_WDT_SELFTEST": "ON"
             }
+        },
+        {
+            "name": "can_selftest",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CAN_SELFTEST": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -69,6 +77,10 @@
         {
             "name": "i2c_wdt_selftest",
             "configurePreset": "i2c_wdt_selftest"
+        },
+        {
+            "name": "can_selftest",
+            "configurePreset": "can_selftest"
         }
     ]
 }
